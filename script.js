@@ -3,6 +3,9 @@ var abstufungen;
 var colors;
 const anzAbstufungen = 6;  //Ändern um Granulatität der Skala anzupassen
 
+//TODO: abstufungen per feld ändern bzw button und seite aktualisieren button
+//      
+
 (async () => {
 data = await getData();
 abstufungen=getAbstufung(anzAbstufungen);
