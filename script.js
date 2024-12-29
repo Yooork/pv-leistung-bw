@@ -1,7 +1,7 @@
 var data;
 var abstufungen;
 var colors;
-const anzAbstufungen = 6; 
+const anzAbstufungen = 6;  //Ändern um Granulatität der Skala anzupassen
 
 (async () => {
      data = await getData();
@@ -43,7 +43,7 @@ legend.addTo(map);
 
 function getColor(pv) {
     for(let i = anzAbstufungen-1; i>=0;i--){
-        if(pv>abstufungen[i])return colors[i];
+        if(pv>=abstufungen[i])return colors[i];
     }
     return '#000000';
 }
