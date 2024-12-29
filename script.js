@@ -30,7 +30,7 @@ var legend = L.control({position: 'bottomright'});
 
 legend.onAdd = function (map) {
     var div = L.DomUtil.create('div', 'legend'),
-        grades = [ 0, 1900, 1920, 1940, 1960, 1980, 2000],
+        grades = abstufungen,
         labels = [];
 
     div.innerHTML += '<strong>Bruttoleistung in Watt</strong><br>';
@@ -109,7 +109,7 @@ function getAbstufung(numberOfAbstufung){
     var abstufungen=[];
 
     for(var i=0;i<=numberOfAbstufung;i++){
-        abstufungen[i]=(max/numberOfAbstufung)*i;
+        abstufungen[i]=parseFloat((max / numberOfAbstufung) * i).toFixed(0);
     }
     
     return abstufungen;
