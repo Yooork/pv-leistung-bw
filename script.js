@@ -1,7 +1,7 @@
 var data;
 var abstufungen;
 var colors;
-const anzAbstufungen = 6;
+const anzAbstufungen = 6; 
 
 (async () => {
      data = await getData();
@@ -9,8 +9,8 @@ const anzAbstufungen = 6;
 
 
 setTimeout(() => {
-abstufungen=getAbstufung(anzAbstufungen);
-colors = generateColorGradient(anzAbstufungen);
+    abstufungen=getAbstufung(anzAbstufungen);
+    colors = generateColorGradient(anzAbstufungen);
 
 var map = L.map('map').setView([48.791, 9.195], 8);
 
