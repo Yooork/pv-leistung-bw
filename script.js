@@ -71,9 +71,11 @@ function style(feature) {
 }
 
 function onEachFeature(feature, layer) {
+    pPerPLZ=getPvPerPLZ(feature.properties.plz_code);
+    formatted = pPerPLZ.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     layer.bindPopup(
-        '<h4>Year of construction: ' +  
-        feature.properties.plz_name + ' </h4>');
+        '<p><h4>' + feature.properties.plz_code+' '+feature.properties.plz_name + ' </h4></p>'+
+        '<p><h5>Bruttoleistung: '+ formatted+' Watt</h4></p>');
 }
 
 function getPvPerPLZ(plz){
