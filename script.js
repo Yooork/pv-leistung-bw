@@ -89,6 +89,7 @@ function getAbstufung(numberOfAbstufung){
     for(let datax of data.PLZ_PV){
         if(datax.PV>max){
             max=datax.PV;
+            //runde auf nächste glatte zahl
         }
     } 
 
