@@ -1,7 +1,7 @@
 var data;
 var abstufungen;
 var colors;
-const anzAbstufungen = 15;
+const anzAbstufungen = 6;
 
 (async () => {
      data = await getData();
