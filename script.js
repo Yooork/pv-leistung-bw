@@ -30,7 +30,7 @@ legend.onAdd = function (map) {
         grades = [ 0, 1900, 1920, 1940, 1960, 1980, 2000],
         labels = [];
 
-    div.innerHTML += '<strong>Baujahr</strong><br>';
+    div.innerHTML += '<strong>Bruttoleistung in Watt</strong><br>';
     div.innerHTML += '<i style="background:black; display: inline-block; width: 18px; height: 18px;margin-right: 8px;border-radius: 3px;"></i> ' +
     'undefined<br>';
     for (var i = 0; i < grades.length; i++) {
