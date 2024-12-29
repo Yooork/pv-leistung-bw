@@ -1,5 +1,6 @@
 var data;
 var abstufungen;
+var colors;
 const anzAbstufungen = 6;
 
 (async () => {
@@ -11,6 +12,8 @@ const anzAbstufungen = 6;
 setTimeout(() => {
 
     abstufungen=getAbstufung(anzAbstufungen);
+    colors = generateColorGradient(anzAbstufungen);
+    console.log(colors);
 
 
 
@@ -47,16 +50,10 @@ legend.addTo(map);
 }, 2000);
 
 function getColor(pv) {
-    return pv > abstufungen[anzAbstufungen-1] ? '#00FF00' :
-    pv > abstufungen[anzAbstufungen-2] ? '#80FF00' :
-    pv > abstufungen[anzAbstufungen-3] ? '#FFFF00' :
-    pv > abstufungen[anzAbstufungen-4] ? '#FFC000' : 
-    pv > abstufungen[anzAbstufungen-5] ? '#FF8000' :
-    pv > 0 ? '#FF0000' : (() => { 
-        console.log('PV0:', pv); 
-        return '#000000'; 
-    })();
-
+    for(let i = anzAbstufungen-1; i>=0;i--){
+        if(pv>abstufungen[i])return colors[i];
+    }
+    return '#000000';
 }
 
 function style(feature) {
@@ -69,6 +66,19 @@ function style(feature) {
         fillOpacity: 0.95
     }
 }
+
+function generateColorGradient(steps) {
+    const colors = [];
+    
+    for (let i = 0; i < steps; i++) {
+      const hue = (i * 120) / (steps - 1); 
+      const color = `hsl(${hue}, 100%, 50%)`;
+      colors.push(color);
+    }
+  
+    return colors;
+}
+  
 
 function onEachFeature(feature, layer) {
     pPerPLZ=getPvPerPLZ(feature.properties.plz_code);
