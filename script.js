@@ -1,4 +1,7 @@
 var data;
+var abstufungen;
+const anzAbstufungen = 6;
+
 (async () => {
      data = await getData();
     console.log("Erhaltene Daten:", data?.PLZ_PV); // Auf PLZ_PV zugreifen
@@ -6,12 +9,8 @@ var data;
 
 
 setTimeout(() => {
-console.log(data);
 
-
-
-console.log(data.PLZ_PV);
-console.log(data.PLZ_PV[0].PLZ);
+    abstufungen=getAbstufung(anzAbstufungen);
 
 
 
@@ -48,13 +47,11 @@ legend.addTo(map);
 }, 2000);
 
 function getColor(pv) {
-    var abstufungen=getAbstufung(6);
-    console.log(abstufungen);
-    return pv > abstufungen[5] ? '#00FF00' :
-    pv > abstufungen[4] ? '#80FF00' :
-    pv > abstufungen[3] ? '#FFFF00' :
-    pv > abstufungen[2] ? '#FFC000' : 
-    pv > abstufungen[1] ? '#FF8000' :
+    return pv > abstufungen[anzAbstufungen-1] ? '#00FF00' :
+    pv > abstufungen[anzAbstufungen-2] ? '#80FF00' :
+    pv > abstufungen[anzAbstufungen-3] ? '#FFFF00' :
+    pv > abstufungen[anzAbstufungen-4] ? '#FFC000' : 
+    pv > abstufungen[anzAbstufungen-5] ? '#FF8000' :
     pv > 0 ? '#FF0000' : (() => { 
         console.log('PV0:', pv); 
         return '#000000'; 
