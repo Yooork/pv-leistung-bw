@@ -5,18 +5,12 @@ const anzAbstufungen = 6;
 
 (async () => {
      data = await getData();
-    console.log("Erhaltene Daten:", data?.PLZ_PV); // Auf PLZ_PV zugreifen
 })()
 
 
 setTimeout(() => {
-
-    abstufungen=getAbstufung(anzAbstufungen);
-    console.log(abstufungen);
-    colors = generateColorGradient(anzAbstufungen);
-    console.log(colors);
-
-
+abstufungen=getAbstufung(anzAbstufungen);
+colors = generateColorGradient(anzAbstufungen);
 
 var map = L.map('map').setView([48.791, 9.195], 8);
 
@@ -25,7 +19,6 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 L.geoJSON(orte, {onEachFeature: onEachFeature, style: style}).addTo(map);
-
 
 var legend = L.control({position: 'bottomright'});
 
@@ -56,7 +49,6 @@ function getColor(pv) {
 }
 
 function style(feature) {
-    console.log(getPvPerPLZ(feature.properties.plz_code));
     return {
         fillColor: getColor(parseInt(getPvPerPLZ(feature.properties.plz_code))),
         weight: 1,
@@ -96,12 +88,10 @@ function getPvPerPLZ(plz){
 }
 
 function getAbstufung(numberOfAbstufung){
-    var min = data.PLZ_PV[0];
     var max = 0;
     for(let datax of data.PLZ_PV){
         if(datax.PV>max){
             max=datax.PV;
-            console.log(datax.PV,'dd')
         }
     } 
 
@@ -115,23 +105,17 @@ function getAbstufung(numberOfAbstufung){
 
 }
 
-
 async function getData() {
     const url = "http://127.0.0.1:5000";
-
     try {
         const response = await fetch(url);
         if (!response.ok) {
             throw new Error(`HTTP-Fehler! Status: ${response.status}`);
         }
         const data = await response.json();
-        console.log("Abgerufene Daten:", data);
-        return data; // Die JSON-Daten werden zurückgegeben
+        return data; 
     } catch (error) {
         console.error("Fehler beim Abrufen der Daten:", error);
-        return null; // Gib im Fehlerfall `null` zurück
+        return null;
     }
 }
-
-
-
