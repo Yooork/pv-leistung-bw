@@ -12,6 +12,7 @@ const anzAbstufungen = 6;
 setTimeout(() => {
 
     abstufungen=getAbstufung(anzAbstufungen);
+    console.log(abstufungen);
     colors = generateColorGradient(anzAbstufungen);
     console.log(colors);
 
@@ -34,11 +35,9 @@ legend.onAdd = function (map) {
         labels = [];
 
     div.innerHTML += '<strong>Bruttoleistung in Watt</strong><br>';
-    div.innerHTML += '<i style="background:black; display: inline-block; width: 18px; height: 18px;margin-right: 8px;border-radius: 3px;"></i> ' +
-    'undefined<br>';
     for (var i = 0; i < grades.length; i++) {
         div.innerHTML +=
-            '<i style="background:' + getColor(grades[i]) + '; display: inline-block; width: 18px; height: 18px;margin-right: 8px;border-radius: 3px;"></i> ' +
+            '<i style="background:' + colors[i] + '; display: inline-block; width: 18px; height: 18px;margin-right: 8px;border-radius: 3px;"></i> ' +
             grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
     }
 
@@ -108,7 +107,7 @@ function getAbstufung(numberOfAbstufung){
 
     var abstufungen=[];
 
-    for(var i=0;i<=numberOfAbstufung;i++){
+    for(var i=0;i<=numberOfAbstufung-1;i++){
         abstufungen[i]=parseFloat((max / numberOfAbstufung) * i).toFixed(0);
     }
     
