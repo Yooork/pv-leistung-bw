@@ -4,13 +4,9 @@ var colors;
 const anzAbstufungen = 6;  //Ändern um Granulatität der Skala anzupassen
 
 (async () => {
-     data = await getData();
-})()
-
-
-setTimeout(() => {
-    abstufungen=getAbstufung(anzAbstufungen);
-    colors = generateColorGradient(anzAbstufungen);
+data = await getData();
+abstufungen=getAbstufung(anzAbstufungen);
+colors = generateColorGradient(anzAbstufungen);
 
 var map = L.map('map').setView([48.791, 9.195], 8);
 
@@ -38,8 +34,7 @@ legend.onAdd = function (map) {
 };
 
 legend.addTo(map);
-
-}, 2000);
+})()
 
 function getColor(pv) {
     for(let i = anzAbstufungen-1; i>=0;i--){
@@ -69,7 +64,6 @@ function generateColorGradient(steps) {
   
     return colors;
 }
-  
 
 function onEachFeature(feature, layer) {
     pPerPLZ=getPvPerPLZ(feature.properties.plz_code);
