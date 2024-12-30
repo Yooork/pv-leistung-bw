@@ -1,117 +1,144 @@
-var data;
-var abstufungen;
-var colors;
-const anzAbstufungen = 6;  //Ändern um Granulatität der Skala anzupassen
+let data;
+let abstufungen;
+let colors;
+let anzAbstufungen = 6;
+let map;
+let geoJsonLayer;
 
-//TODO: abstufungen per feld ändern bzw button und seite aktualisieren button
-//      legende mit tausender punkten
 document.addEventListener("DOMContentLoaded", () => {
-    const overlay = document.createElement("div");
-    overlay.style.position = "fixed";
-    overlay.style.bottom = "10px";
-    overlay.style.left = "10px";
-    overlay.style.display = "flex";
-    overlay.style.justifyContent = "center";
-    overlay.style.alignItems = "center";
-    overlay.style.zIndex = "1000";
+    const overlay = createOverlay();
+    document.body.appendChild(overlay);
 
-    const button = document.createElement("button");
-    button.textContent = "Daten neu laden";
-    button.style.padding = "10px 20px";
-    button.style.fontSize = "12px";
-    button.style.border = "none";
-    button.style.borderRadius = "5px";
-    button.style.backgroundColor = "#007BFF";
-    button.style.color = "white";
-    button.style.cursor = "pointer";
-
-    const slideContainer = document.createElement("div");
-    slideContainer.style.position = "fixed";
-    slideContainer.style.bottom = "30px";
-    slideContainer.style.right = "180px";
-    slideContainer.style.display = "flex";
-    slideContainer.style.justifyContent = "center";
-    slideContainer.style.alignItems = "center";
-    slideContainer.style.zIndex = "1000";
-
-    const plus = document.createElement("button");
-    plus.textContent = "+";
-    plus.style.padding = "5px 10px";
-    plus.style.fontSize = "10px";
-    plus.style.border = "none";
-    plus.style.borderRadius = "5px";
-    plus.style.backgroundColor = "#007BFF";
-    plus.style.color = "white";
-    plus.style.cursor = "pointer";
-
-    const minus = document.createElement("button");
-    minus.textContent = "-";
-    minus.style.padding = "5px 10px";
-    minus.style.fontSize = "10px";
-    minus.style.border = "none";
-    minus.style.borderRadius = "5px";
-    minus.style.backgroundColor = "#007BFF";
-    minus.style.color = "white";
-    minus.style.cursor = "pointer";
-
-    button.addEventListener("click", async () => {
+    overlay.querySelector(".reload-button").addEventListener("click", async () => {
         try {
-            overlay.style.display = "none"; // Overlay ausblenden
+            overlay.style.display = "none";
             data = await getData();
-            abstufungen = getAbstufung(anzAbstufungen);
-            colors = generateColorGradient(anzAbstufungen);
-            location.reload(); // Seite neu laden
+            updateAbstufungenAndColors();
+            updateMap();
+            updateLegend();
         } catch (error) {
             console.error("Fehler beim Neuladen der Daten:", error);
         }
     });
 
-    overlay.appendChild(button);
-    slideContainer.appendChild(plus);
-    slideContainer.appendChild(minus);
-    document.body.appendChild(slideContainer);
-    document.body.appendChild(overlay);
+    loadDataAndMap();
 });
 
-
-(async () => {
+async function loadDataAndMap() {
     data = await getData();
-    abstufungen = getAbstufung(anzAbstufungen);
-    colors = generateColorGradient(anzAbstufungen);
+    updateAbstufungenAndColors();
 
-    var map = L.map('map').setView([48.791, 9.195], 8);
-
+    map = L.map('map').setView([48.791, 9.195], 8);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    L.geoJSON(orte, { onEachFeature: onEachFeature, style: style }).addTo(map);
+    geoJsonLayer = L.geoJSON(orte, { onEachFeature, style }).addTo(map);
+    addLegend();
+}
 
-    var legend = L.control({ position: 'bottomright' });
+function updateAbstufungenAndColors() {
+    abstufungen = getAbstufung(anzAbstufungen);
+    colors = generateColorGradient(anzAbstufungen);
+}
 
-    legend.onAdd = function (map) {
-        var div = L.DomUtil.create('div', 'legend'),
-            grades = abstufungen,
-            labels = [];
+function updateMap() {
+    map.removeLayer(geoJsonLayer);
+    geoJsonLayer = L.geoJSON(orte, { onEachFeature, style }).addTo(map);
+}
 
-        div.innerHTML += '<strong class="legend-title">Bruttoleistung in Watt</strong>';
+function addLegend() {
+    const legend = L.control({ position: 'bottomright' });
+    legend.onAdd = createLegend;
+    legend.addTo(map);
+}
 
-        for (let i = 0; i < grades.length; i++) {
-            div.innerHTML += `
+function createOverlay() {
+    const overlay = document.createElement("div");
+    overlay.classList.add("overlay");
+
+    const button = document.createElement("button");
+    button.classList.add("reload-button");
+    button.textContent = "Daten neu laden";
+
+    overlay.appendChild(button);
+    return overlay;
+}
+
+function createLegend() {
+    const div = L.DomUtil.create('div', 'legend');
+    div.innerHTML = '<strong class="legend-title">Bruttoleistung in Watt</strong>';
+
+    abstufungen.forEach((grade, i) => {
+        div.innerHTML += `
             <div class="legend-item">
-                <i class="legend-icon" style="background:${colors[i]};"></i>
+                <i class="legend-icon" style="background:${colors[i]}"></i>
                 <span class="legend-text">
-                    ${formatNumberWithDots(grades[i])} ${grades[i + 1] ? ` &ndash; ${formatNumberWithDots(grades[i + 1])}` : '+'}
+                    ${formatNumberWithDots(grade)} ${abstufungen[i + 1] ? ` &ndash; ${formatNumberWithDots(abstufungen[i + 1])}` : '+'}
                 </span>
             </div>
         `;
+    });
+
+    div.innerHTML += `
+        <div class="legend-controls">
+            <button class="control-button" id="legend-plus">+</button>
+            <button class="control-button" id="legend-minus">-</button>
+        </div>
+    `;
+
+    addLegendControls(div);
+    return div;
+}
+
+function addLegendControls(legendDiv) {
+    const plusButton = legendDiv.querySelector('#legend-plus');
+    const minusButton = legendDiv.querySelector('#legend-minus');
+
+    plusButton.addEventListener('click', () => {
+        anzAbstufungen++;
+        updateAbstufungenAndColors();
+        updateMap();
+        updateLegend();
+    });
+
+    minusButton.addEventListener('click', () => {
+        if (anzAbstufungen > 1) {
+            anzAbstufungen--;
+            updateAbstufungenAndColors();
+            updateMap();
+            updateLegend();
         }
+    });
+}
 
-        return div;
-    };
+function updateLegend() {
+    const legend = document.querySelector('.legend');
+    if (legend) {
+        legend.innerHTML = '';
+        legend.innerHTML = '<strong class="legend-title">Bruttoleistung in Watt</strong>';
 
-    legend.addTo(map);
-})()
+        abstufungen.forEach((grade, i) => {
+            legend.innerHTML += `
+                <div class="legend-item">
+                    <i class="legend-icon" style="background:${colors[i]}"></i>
+                    <span class="legend-text">
+                        ${formatNumberWithDots(grade)} ${abstufungen[i + 1] ? ` &ndash; ${formatNumberWithDots(abstufungen[i + 1])}` : '+'}
+                    </span>
+                </div>
+            `;
+        });
+
+        legend.innerHTML += `
+            <div class="legend-controls">
+                <button class="control-button" id="legend-plus">+</button>
+                <button class="control-button" id="legend-minus">-</button>
+            </div>
+        `;
+
+        addLegendControls(legend);
+    }
+}
 
 function formatNumberWithDots(number) {
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
@@ -131,68 +158,54 @@ function style(feature) {
         opacity: 1,
         color: 'white',
         fillOpacity: 0.95
-    }
+    };
 }
 
 function generateColorGradient(steps) {
-    const colors = [];
-
-    for (let i = 0; i < steps; i++) {
+    return Array.from({ length: steps }, (_, i) => {
         const hue = (i * 120) / (steps - 1);
-        const color = `hsl(${hue}, 100%, 50%)`;
-        colors.push(color);
-    }
-
-    return colors;
+        return `hsl(${hue}, 100%, 50%)`;
+    });
 }
 
 function onEachFeature(feature, layer) {
     const pPerPLZ = getPvPerPLZ(feature.properties.plz_code);
-    const formatted = pPerPLZ.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-
+    const formatted = formatNumberWithDots(pPerPLZ);
     layer.bindPopup(`
         <div class="popup-title">${feature.properties.plz_code} ${feature.properties.plz_name}</div>
         <div class="popup-subtitle">Bruttoleistung: ${formatted} Watt</div>
     `);
 }
 
-
 function getPvPerPLZ(plz) {
-    for (let datax of data.PLZ_PV) {
-        if (datax.PLZ == plz) {
-            return datax.PV
-        }
-    }
+    const datax = data.PLZ_PV.find(item => item.PLZ == plz);
+    return datax ? datax.PV : 0;
 }
 
-function getAbstufung(numberOfAbstufung) {
-    var max = 0;
+function getAbstufung(anzAbstufungen) {
+    let max = 0;
     for (let datax of data.PLZ_PV) {
         if (datax.PV > max) {
             max = datax.PV;
-            //runde auf nächste glatte zahl
         }
     }
 
-    var abstufungen = [];
-
-    for (var i = 0; i <= numberOfAbstufung - 1; i++) {
-        abstufungen[i] = parseFloat((max / numberOfAbstufung) * i).toFixed(0);
+    const abstufungen = [];
+    for (let i = 0; i < anzAbstufungen; i++) {
+        let abstufung = Math.round((max / anzAbstufungen) * i);
+        abstufung = Math.ceil(abstufung / 10000) * 10000;
+        // wollen wir das?
+        abstufungen.push(abstufung);
     }
 
     return abstufungen;
-
 }
 
 async function getData() {
-    const url = "http://127.0.0.1:5000";
     try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`HTTP-Fehler! Status: ${response.status}`);
-        }
-        const data = await response.json();
-        return data;
+        const response = await fetch("http://127.0.0.1:5000");
+        if (!response.ok) throw new Error(`HTTP-Fehler! Status: ${response.status}`);
+        return await response.json();
     } catch (error) {
         console.error("Fehler beim Abrufen der Daten:", error);
         return null;

@@ -1,3 +1,4 @@
+/* Legende */
 .legend {
     font-family: Arial, sans-serif;
     font-size: 14px;
@@ -32,16 +33,13 @@
     font-size: 12px;
 }
 
+/* Map */
 #map {
     height: 98.6vh;
     width: 100%;
 }
 
-.legend {
-    background: white;
-    padding: 10px;
-}
-
+/* Reload-Button */
 .overlay {
     position: fixed;
     bottom: 20px;
@@ -62,10 +60,34 @@
     cursor: pointer;
 }
 
-.reload-button:hover {
+.reload-button:hover,
+.control-button:hover {
     background-color: #0056b3;
 }
 
+/* +/- Buttons */
+.slide-container {
+    position: fixed;
+    bottom: 30px;
+    right: 180px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.control-button {
+    padding: 5px 10px;
+    font-size: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007BFF;
+    color: white;
+    cursor: pointer;
+    margin: 0 5px;
+}
+
+/* onClick Text */
 .popup-title {
     font-size: 14px;
     font-weight: bold;
