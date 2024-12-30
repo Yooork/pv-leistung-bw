@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
             updateLegend();
             showMessage('Die Daten wurden neu geladen!');
         } catch (error) {
-            showMessage("Fehler beim neuladen der Daten:", error);
+            showMessage("Fehler beim Neuladen der Daten:", error);
         }
     });
 
@@ -26,14 +26,17 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function getData() {
-    try {
-        const response = await fetch("http://127.0.0.1:5000");
-        if (!response.ok) throw new Error(`HTTP-Fehler! Status: ${response.status}`);
-        return await response.json();
-    } catch (error) {
-        showMessage("Bitte den Server starten!", error);
-        return null;
-    }
+    //while (true) {
+        try {
+            const response = await fetch("http://127.0.0.1:5000");
+            if (!response.ok) throw new Error(`HTTP-Fehler! Status: ${response.status}`);
+            return await response.json();
+        } catch (error) {
+            showMessage("Bitte den Server starten!", error);
+            //await new Promise(resolve => setTimeout(resolve, 3000));
+            return null;
+        }
+    //}
 }
 
 async function loadDataAndMap() {
