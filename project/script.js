@@ -110,7 +110,7 @@ function addLegendControls(legendDiv) {
     const minusButton = legendDiv.querySelector('#legend-minus');
 
     plusButton.addEventListener('click', () => {
-        if (anzAbstufungen < 30) {
+        if (anzAbstufungen < 15) {
             anzAbstufungen++;
             updateAbstufungenAndColors();
             updateMap();
@@ -185,8 +185,8 @@ function style(feature) {
 
 function generateColorGradient(steps) {
     return Array.from({ length: steps }, (_, i) => {
-        const hue = (i * 120) / (steps - 1);
-        return `hsl(${hue}, 100%, 50%)`;
+        const lightness = 90 - (80 * i) / (steps - 1); // Von 10% (dunkel) bis 90% (hell)
+        return `hsl(240, 100%, ${lightness}%)`; // 240 ist der Farbton für Blau
     });
 }
 
