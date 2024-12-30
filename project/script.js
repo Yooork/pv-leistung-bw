@@ -8,6 +8,10 @@ let barrierFree = false;
 let barrierButtonImgSrc = 'colorblind.png';
 const message = document.querySelector('.message');
 
+/*
+    TODO: Burger Menü, beim ausklappen sortierbare liste der PLZ - Ortschaften - Leistung, nach anklicken wird entsprechend gehighlighted
+*/
+
 document.addEventListener("DOMContentLoaded", () => {
     const overlay = createOverlay();
     const menu = createMenu();
@@ -166,7 +170,7 @@ function addLegendControls(legendDiv) {
         }
     });
 
-    barrierButton.addEventListener('click', function () {
+    barrierButton.addEventListener('click', () => {
         barrierFree = !barrierFree;
         barrierButtonImgSrc = barrierFree ? 'colorblindbw.png' : 'colorblind.png';
         updateAbstufungenAndColors();
