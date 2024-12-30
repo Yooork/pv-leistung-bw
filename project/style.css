@@ -5,6 +5,9 @@
     color: #333;
     background-color: rgba(255, 255, 255, 0.7) !important;
     padding: 10px;
+    max-height: 80vh;
+    /* Maximale Höhe, die du für die Legende festlegen möchtest */
+    overflow-y: auto;
 }
 
 .legend-title {
@@ -33,9 +36,25 @@
     font-size: 12px;
 }
 
+/* +/- Buttons */
+.legend-controls {
+    text-align: center
+}
+
+.control-button {
+    padding: 5px 10px;
+    font-size: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007BFF;
+    color: white;
+    cursor: pointer;
+    margin: 0 5px;
+}
+
 /* Map */
 #map {
-    height: 98.6vh;
+    height: 98.35vh;
     width: 100%;
 }
 
@@ -63,28 +82,6 @@
 .reload-button:hover,
 .control-button:hover {
     background-color: #0056b3;
-}
-
-/* +/- Buttons */
-.slide-container {
-    position: fixed;
-    bottom: 30px;
-    right: 180px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.control-button {
-    padding: 5px 10px;
-    font-size: 10px;
-    border: none;
-    border-radius: 5px;
-    background-color: #007BFF;
-    color: white;
-    cursor: pointer;
-    margin: 0 5px;
 }
 
 /* onClick Text */
