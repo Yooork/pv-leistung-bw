@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const menu = createMenu();
     document.body.appendChild(overlay);
     document.body.appendChild(menu);
-    
+
 
     overlay.querySelector(".reload-button").addEventListener("click", async () => {
         try {
@@ -36,7 +36,7 @@ async function getData() {
         return await response.json();
     } catch (error) {
         showMessage("Bitte den Server starten!", error);
-        return null;
+        sleep(1000);
     }
 }
 
@@ -55,7 +55,7 @@ async function loadDataAndMap() {
     }
 }
 
-function createMenu(){
+function createMenu() {
     const menu = document.createElement("div");
     const menuMain = document.createElement("div");
     const menuFog = document.createElement("div");
@@ -225,7 +225,7 @@ function style(feature) {
 }
 
 function generateColorGradient(steps) {
-    if(!barrierFree){
+    if (!barrierFree) {
         return Array.from({ length: steps }, (_, i) => {
             const hue = 120 * (i / (steps - 1)); // 0 (rot) bis 120 (grün)
             return `hsl(${hue}, 70%, 50%)`;
