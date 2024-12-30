@@ -4,6 +4,7 @@ let colors;
 let anzAbstufungen = 6;
 let map;
 let geoJsonLayer;
+const message = document.querySelector('.message');
 
 document.addEventListener("DOMContentLoaded", () => {
     const overlay = createOverlay();
@@ -11,11 +12,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     overlay.querySelector(".reload-button").addEventListener("click", async () => {
         try {
-            overlay.style.display = "none";
             data = await getData();
             updateAbstufungenAndColors();
             updateMap();
             updateLegend();
+            showMessage('Die Daten wurden neu geladen!');
         } catch (error) {
             console.error("Fehler beim Neuladen der Daten:", error);
         }
@@ -23,6 +24,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     loadDataAndMap();
 });
+
+async function getData() {
+    try {
+        const response = await fetch("http://127.0.0.1:5000");
+        if (!response.ok) throw new Error(`HTTP-Fehler! Status: ${response.status}`);
+        return await response.json();
+    } catch (error) {
+        console.error("Fehler beim Abrufen der Daten:", error);
+        return null;
+    }
+}
 
 async function loadDataAndMap() {
     data = await getData();
@@ -94,7 +106,6 @@ function createLegend() {
 function addLegendControls(legendDiv) {
     const plusButton = legendDiv.querySelector('#legend-plus');
     const minusButton = legendDiv.querySelector('#legend-minus');
-    const message = document.querySelector('.message');
 
     plusButton.addEventListener('click', () => {
         if (anzAbstufungen < 30) {
@@ -104,11 +115,7 @@ function addLegendControls(legendDiv) {
             updateLegend();
         }
         else {
-            message.textContent = 'Die Anzahl der Abstufungen kann nicht weiter erhöht werden!';
-            message.style.display = 'block';
-            setTimeout(() => {
-                message.style.display = 'none';
-            }, 3000);
+            showMessage('Die Anzahl der Abstufungen kann nicht weiter erhöht werden!');
         }
     });
 
@@ -120,11 +127,7 @@ function addLegendControls(legendDiv) {
             updateLegend();
         }
         else {
-            message.textContent = 'Die Anzahl der Abstufungen kann nicht weiter reduziert werden!';
-            message.style.display = 'block';
-            setTimeout(() => {
-                message.style.display = 'none';
-            }, 3000);
+            showMessage('Die Anzahl der Abstufungen kann nicht weiter reduziert werden!');
         }
     });
 }
@@ -218,13 +221,10 @@ function getAbstufung(anzAbstufungen) {
     return abstufungen;
 }
 
-async function getData() {
-    try {
-        const response = await fetch("http://127.0.0.1:5000");
-        if (!response.ok) throw new Error(`HTTP-Fehler! Status: ${response.status}`);
-        return await response.json();
-    } catch (error) {
-        console.error("Fehler beim Abrufen der Daten:", error);
-        return null;
-    }
+function showMessage(messageText) {
+    message.textContent = messageText;
+    message.style.display = 'block';
+    setTimeout(() => {
+        message.style.display = 'none';
+    }, 3000);
 }
