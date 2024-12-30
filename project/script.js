@@ -94,20 +94,37 @@ function createLegend() {
 function addLegendControls(legendDiv) {
     const plusButton = legendDiv.querySelector('#legend-plus');
     const minusButton = legendDiv.querySelector('#legend-minus');
+    const message = document.querySelector('.message');
 
     plusButton.addEventListener('click', () => {
-        anzAbstufungen++;
-        updateAbstufungenAndColors();
-        updateMap();
-        updateLegend();
+        if (anzAbstufungen < 30) {
+            anzAbstufungen++;
+            updateAbstufungenAndColors();
+            updateMap();
+            updateLegend();
+        }
+        else {
+            message.textContent = 'Die Anzahl der Abstufungen kann nicht weiter erhöht werden!';
+            message.style.display = 'block';
+            setTimeout(() => {
+                message.style.display = 'none';
+            }, 3000);
+        }
     });
 
     minusButton.addEventListener('click', () => {
-        if (anzAbstufungen > 1) {
+        if (anzAbstufungen > 2) {
             anzAbstufungen--;
             updateAbstufungenAndColors();
             updateMap();
             updateLegend();
+        }
+        else {
+            message.textContent = 'Die Anzahl der Abstufungen kann nicht weiter reduziert werden!';
+            message.style.display = 'block';
+            setTimeout(() => {
+                message.style.display = 'none';
+            }, 3000);
         }
     });
 }
