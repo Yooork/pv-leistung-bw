@@ -1,3 +1,7 @@
+body {
+    margin: 0;
+}
+
 /* Legende */
 .legend {
     font-family: Arial, sans-serif;
@@ -42,15 +46,16 @@
 }
 
 .control-button {
-    height: 20px;
-    width: 20px;
-    font-size: 10px;
-    border: 2px;
+    height: 30px;
+    width: 30px;
+    font-size: 12px;
+    border: 2px solid;
     border-radius: 5px;
-    background-color: #007BFF;
+    border-color: rgba(0, 0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.7);
     color: white;
     cursor: pointer;
-    margin: 0 5px;
+    transition: 0.3s;
 }
 
 /* Map */

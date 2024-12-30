@@ -101,6 +101,7 @@ function createOverlay() {
     button.classList.add("reload-button");
     // button.textContent = "Daten neu laden";
     button.textContent = "↻";
+    button.title = "Daten erneut laden"
 
     overlay.appendChild(button);
     return overlay;
@@ -137,6 +138,9 @@ function addLegendControls(legendDiv) {
     const plusButton = legendDiv.querySelector('#legend-plus');
     const minusButton = legendDiv.querySelector('#legend-minus');
     const barrierButton = legendDiv.querySelector('#legend-barrier');
+    plusButton.title = "Abstufungen erhöhen";
+    minusButton.title = "Abstufungen verringern";
+    barrierButton.title = "Barrierefreier Modus";
 
     plusButton.addEventListener('click', () => {
         if (anzAbstufungen < 15) {
