@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
             updateLegend();
             showMessage('Die Daten wurden neu geladen!');
         } catch (error) {
-            console.error("Fehler beim Neuladen der Daten:", error);
+            showMessage("Fehler beim neuladen der Daten:", error);
         }
     });
 
@@ -31,22 +31,24 @@ async function getData() {
         if (!response.ok) throw new Error(`HTTP-Fehler! Status: ${response.status}`);
         return await response.json();
     } catch (error) {
-        console.error("Fehler beim Abrufen der Daten:", error);
+        showMessage("Bitte den Server starten!", error);
         return null;
     }
 }
 
 async function loadDataAndMap() {
     data = await getData();
-    updateAbstufungenAndColors();
+    if (data) {
+        updateAbstufungenAndColors();
 
-    map = L.map('map').setView([48.791, 9.195], 8);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+        map = L.map('map').setView([48.791, 9.195], 8);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
 
-    geoJsonLayer = L.geoJSON(orte, { onEachFeature, style }).addTo(map);
-    addLegend();
+        geoJsonLayer = L.geoJSON(orte, { onEachFeature, style }).addTo(map);
+        addLegend();
+    }
 }
 
 function updateAbstufungenAndColors() {
@@ -221,8 +223,16 @@ function getAbstufung(anzAbstufungen) {
     return abstufungen;
 }
 
-function showMessage(messageText) {
-    message.textContent = messageText;
+function showMessage(messageText, error = '') {
+    if (!error) {
+        message.textContent = messageText;
+        message.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    }
+    else {
+        message.textContent = messageText + " " + error;
+        message.style.backgroundColor = '#f44336';
+    }
+
     message.style.display = 'block';
     setTimeout(() => {
         message.style.display = 'none';
