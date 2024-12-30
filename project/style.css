@@ -55,6 +55,15 @@ body {
     color: white;
     cursor: pointer;
     transition: 0.3s;
+    justify-content: center;
+    align-items: center;
+}
+
+#legend-barrier .button-image {
+    height: 20px;
+    width: 20px;
+    object-fit: contain;
+    margin: auto;
 }
 
 /* Map */

@@ -126,7 +126,7 @@ function createLegend() {
         <div class="legend-controls">
             <button class="control-button" id="legend-plus">+</button>
             <button class="control-button" id="legend-minus">-</button>
-            <button class="control-button" id="legend-barrier">♿</button>
+            <button class="control-button" id="legend-barrier"><img src="colorblind.png" alt="Button Icon" class="button-image"/></button>
         </div>
     `;
 
@@ -195,7 +195,7 @@ function updateLegend() {
             <div class="legend-controls">
                 <button class="control-button" id="legend-plus">+</button>
                 <button class="control-button" id="legend-minus">-</button>
-                <button class="control-button" id="legend-barrier">♿</button>
+                <button class="control-button" id="legend-barrier"><img src="colorblind.png" alt="Button Icon" class="button-image"/></button>
             </div>
         `;
 
