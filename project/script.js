@@ -7,15 +7,56 @@ const anzAbstufungen = 6;  //Ändern um Granulatität der Skala anzupassen
 //      legende mit tausender punkten
 document.addEventListener("DOMContentLoaded", () => {
     const overlay = document.createElement("div");
-    overlay.classList.add("overlay");
+    overlay.style.position = "fixed";
+    overlay.style.bottom = "10px";
+    overlay.style.left = "10px";
+    overlay.style.display = "flex";
+    overlay.style.justifyContent = "center";
+    overlay.style.alignItems = "center";
+    overlay.style.zIndex = "1000";
 
     const button = document.createElement("button");
-    button.classList.add("reload-button");
     button.textContent = "Daten neu laden";
+    button.style.padding = "10px 20px";
+    button.style.fontSize = "12px";
+    button.style.border = "none";
+    button.style.borderRadius = "5px";
+    button.style.backgroundColor = "#007BFF";
+    button.style.color = "white";
+    button.style.cursor = "pointer";
+
+    const slideContainer = document.createElement("div");
+    slideContainer.style.position = "fixed";
+    slideContainer.style.bottom = "30px";
+    slideContainer.style.right = "180px";
+    slideContainer.style.display = "flex";
+    slideContainer.style.justifyContent = "center";
+    slideContainer.style.alignItems = "center";
+    slideContainer.style.zIndex = "1000";
+
+    const plus = document.createElement("button");
+    plus.textContent = "+";
+    plus.style.padding = "5px 10px";
+    plus.style.fontSize = "10px";
+    plus.style.border = "none";
+    plus.style.borderRadius = "5px";
+    plus.style.backgroundColor = "#007BFF";
+    plus.style.color = "white";
+    plus.style.cursor = "pointer";
+
+    const minus = document.createElement("button");
+    minus.textContent = "-";
+    minus.style.padding = "5px 10px";
+    minus.style.fontSize = "10px";
+    minus.style.border = "none";
+    minus.style.borderRadius = "5px";
+    minus.style.backgroundColor = "#007BFF";
+    minus.style.color = "white";
+    minus.style.cursor = "pointer";
 
     button.addEventListener("click", async () => {
         try {
-            overlay.style.display = "none";
+            overlay.style.display = "none"; // Overlay ausblenden
             data = await getData();
             abstufungen = getAbstufung(anzAbstufungen);
             colors = generateColorGradient(anzAbstufungen);
@@ -26,6 +67,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     overlay.appendChild(button);
+    slideContainer.appendChild(plus);
+    slideContainer.appendChild(minus);
+    document.body.appendChild(slideContainer);
     document.body.appendChild(overlay);
 });
 
