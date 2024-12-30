@@ -9,7 +9,10 @@ const message = document.querySelector('.message');
 
 document.addEventListener("DOMContentLoaded", () => {
     const overlay = createOverlay();
+    const menu = createMenu();
     document.body.appendChild(overlay);
+    document.body.appendChild(menu);
+    
 
     overlay.querySelector(".reload-button").addEventListener("click", async () => {
         try {
@@ -52,6 +55,28 @@ async function loadDataAndMap() {
     }
 }
 
+function createMenu(){
+    const menu = document.createElement("div");
+    const menuMain = document.createElement("div");
+    const menuFog = document.createElement("div");
+    const menuIcon = document.createElement("img");
+    menuIcon.src = "solar_power_24dp_E8EAED_FILL0_wght400_GRAD0_opsz24.png";
+    const menuTitle = document.createElement("div");
+    menuTitle.textContent = "PV-Leistungen in Baden-Württemberg";
+    document.body.appendChild(menuTitle);
+
+    menu.classList.add("menu");
+    menuMain.classList.add("menuMain");
+    menuFog.classList.add("menuFog");
+    menuIcon.classList.add("menuIcon");
+    menuTitle.classList.add("menuTitle");
+
+    menu.appendChild(menuMain);
+    menuMain.appendChild(menuIcon);
+    menu.appendChild(menuFog);
+    return menu;
+}
+
 function updateAbstufungenAndColors() {
     abstufungen = getAbstufung(anzAbstufungen);
     colors = generateColorGradient(anzAbstufungen);
@@ -74,7 +99,8 @@ function createOverlay() {
 
     const button = document.createElement("button");
     button.classList.add("reload-button");
-    button.textContent = "Daten neu laden";
+    // button.textContent = "Daten neu laden";
+    button.textContent = "↻";
 
     overlay.appendChild(button);
     return overlay;
