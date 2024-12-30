@@ -5,6 +5,41 @@ const anzAbstufungen = 6;  //Ändern um Granulatität der Skala anzupassen
 
 //TODO: abstufungen per feld ändern bzw button und seite aktualisieren button
 //      legende mit tausender punkten
+document.addEventListener("DOMContentLoaded", () => {
+    const overlay = document.createElement("div");
+    overlay.style.position = "fixed";
+    overlay.style.bottom = "10px";
+    overlay.style.left = "10px";
+    overlay.style.display = "flex";
+    overlay.style.justifyContent = "center";
+    overlay.style.alignItems = "center";
+    overlay.style.zIndex = "1000";
+
+    const button = document.createElement("button");
+    button.textContent = "Daten neu laden";
+    button.style.padding = "10px 20px";
+    button.style.fontSize = "12px";
+    button.style.border = "none";
+    button.style.borderRadius = "5px";
+    button.style.backgroundColor = "#007BFF";
+    button.style.color = "white";
+    button.style.cursor = "pointer";
+
+    button.addEventListener("click", async () => {
+        try {
+            overlay.style.display = "none"; // Overlay ausblenden
+            data = await getData();
+            abstufungen = getAbstufung(anzAbstufungen);
+            colors = generateColorGradient(anzAbstufungen);
+            location.reload(); // Seite neu laden
+        } catch (error) {
+            console.error("Fehler beim Neuladen der Daten:", error);
+        }
+    });
+
+    overlay.appendChild(button);
+    document.body.appendChild(overlay);
+});
 
 (async () => {
 data = await getData();
@@ -38,6 +73,10 @@ legend.onAdd = function (map) {
 
 legend.addTo(map);
 })()
+
+function formatNumberWithDots(number) {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
 
 function getColor(pv) {
     for(let i = anzAbstufungen-1; i>=0;i--){
