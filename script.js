@@ -61,12 +61,20 @@ legend.onAdd = function (map) {
         grades = abstufungen,
         labels = [];
 
-    div.innerHTML += '<strong>Bruttoleistung in Watt</strong><br>';
-    for (var i = 0; i < grades.length; i++) {
-        div.innerHTML +=
-            '<i style="background:' + colors[i] + '; display: inline-block; width: 18px; height: 18px;margin-right: 8px;border-radius: 3px;"></i> ' +
-            grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+    div.innerHTML += '<strong style="display: block; margin-bottom: 5px;">Bruttoleistung in Watt</strong>';
+
+    for (let i = 0; i < grades.length; i++) {
+        div.innerHTML += `
+            <div style="display: flex; align-items: center; margin-bottom: 4px;">
+                <i style="background:${colors[i]}; display: inline-block; width: 18px; height: 18px; margin-right: 5px; border-radius: 3px;"></i>
+                <span>
+                    ${formatNumberWithDots(grades[i])} ${grades[i + 1] ? ` &ndash; ${formatNumberWithDots(grades[i + 1])}` : '+'}
+                </span>
+            </div>
+        `;
     }
+    
+    
 
     return div;
 };
