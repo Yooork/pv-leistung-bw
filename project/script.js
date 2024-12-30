@@ -31,29 +31,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 (async () => {
-data = await getData();
-abstufungen=getAbstufung(anzAbstufungen);
-colors = generateColorGradient(anzAbstufungen);
+    data = await getData();
+    abstufungen = getAbstufung(anzAbstufungen);
+    colors = generateColorGradient(anzAbstufungen);
 
-var map = L.map('map').setView([48.791, 9.195], 8);
+    var map = L.map('map').setView([48.791, 9.195], 8);
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-}).addTo(map);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
 
-L.geoJSON(orte, {onEachFeature: onEachFeature, style: style}).addTo(map);
+    L.geoJSON(orte, { onEachFeature: onEachFeature, style: style }).addTo(map);
 
-var legend = L.control({position: 'bottomright'});
+    var legend = L.control({ position: 'bottomright' });
 
-legend.onAdd = function (map) {
-    var div = L.DomUtil.create('div', 'legend'),
-        grades = abstufungen,
-        labels = [];
+    legend.onAdd = function (map) {
+        var div = L.DomUtil.create('div', 'legend'),
+            grades = abstufungen,
+            labels = [];
 
-    div.innerHTML += '<strong class="legend-title">Bruttoleistung in Watt</strong>';
+        div.innerHTML += '<strong class="legend-title">Bruttoleistung in Watt</strong>';
 
-    for (let i = 0; i < grades.length; i++) {
-        div.innerHTML += `
+        for (let i = 0; i < grades.length; i++) {
+            div.innerHTML += `
             <div class="legend-item">
                 <i class="legend-icon" style="background:${colors[i]};"></i>
                 <span class="legend-text">
@@ -61,12 +61,12 @@ legend.onAdd = function (map) {
                 </span>
             </div>
         `;
-    }
+        }
 
-    return div;
-};
+        return div;
+    };
 
-legend.addTo(map);
+    legend.addTo(map);
 })()
 
 function formatNumberWithDots(number) {
@@ -74,8 +74,8 @@ function formatNumberWithDots(number) {
 }
 
 function getColor(pv) {
-    for(let i = anzAbstufungen-1; i>=0;i--){
-        if(pv>=abstufungen[i])return colors[i];
+    for (let i = anzAbstufungen - 1; i >= 0; i--) {
+        if (pv >= abstufungen[i]) return colors[i];
     }
     return '#000000';
 }
@@ -92,20 +92,20 @@ function style(feature) {
 
 function generateColorGradient(steps) {
     const colors = [];
-    
+
     for (let i = 0; i < steps; i++) {
-      const hue = (i * 120) / (steps - 1); 
-      const color = `hsl(${hue}, 100%, 50%)`;
-      colors.push(color);
+        const hue = (i * 120) / (steps - 1);
+        const color = `hsl(${hue}, 100%, 50%)`;
+        colors.push(color);
     }
-  
+
     return colors;
 }
 
 function onEachFeature(feature, layer) {
     const pPerPLZ = getPvPerPLZ(feature.properties.plz_code);
     const formatted = pPerPLZ.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-    
+
     layer.bindPopup(`
         <div class="popup-title">${feature.properties.plz_code} ${feature.properties.plz_name}</div>
         <div class="popup-subtitle">Bruttoleistung: ${formatted} Watt</div>
@@ -113,29 +113,29 @@ function onEachFeature(feature, layer) {
 }
 
 
-function getPvPerPLZ(plz){
-    for(let datax of data.PLZ_PV){
-        if(datax.PLZ==plz){
+function getPvPerPLZ(plz) {
+    for (let datax of data.PLZ_PV) {
+        if (datax.PLZ == plz) {
             return datax.PV
         }
     }
 }
 
-function getAbstufung(numberOfAbstufung){
+function getAbstufung(numberOfAbstufung) {
     var max = 0;
-    for(let datax of data.PLZ_PV){
-        if(datax.PV>max){
-            max=datax.PV;
+    for (let datax of data.PLZ_PV) {
+        if (datax.PV > max) {
+            max = datax.PV;
             //runde auf nächste glatte zahl
         }
-    } 
-
-    var abstufungen=[];
-
-    for(var i=0;i<=numberOfAbstufung-1;i++){
-        abstufungen[i]=parseFloat((max / numberOfAbstufung) * i).toFixed(0);
     }
-    
+
+    var abstufungen = [];
+
+    for (var i = 0; i <= numberOfAbstufung - 1; i++) {
+        abstufungen[i] = parseFloat((max / numberOfAbstufung) * i).toFixed(0);
+    }
+
     return abstufungen;
 
 }
@@ -148,7 +148,7 @@ async function getData() {
             throw new Error(`HTTP-Fehler! Status: ${response.status}`);
         }
         const data = await response.json();
-        return data; 
+        return data;
     } catch (error) {
         console.error("Fehler beim Abrufen der Daten:", error);
         return null;
