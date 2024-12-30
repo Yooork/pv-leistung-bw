@@ -19,10 +19,9 @@ def filter_geojson(input_file, output_file, key, value):
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(filtered_geojson, f, ensure_ascii=False, indent=2)
 
-input_geojson = "/Data/deutschland-postleitzahlen.geojson"  # Input file path
-output_geojson = "/Data/bw-postleitzahlen.geojson"  # Output file path
+input_geojson = "deutschland-postleitzahlen.geojson"  # Input file path
+output_geojson = "bw-geodata.geojson"  # Output file path
 filter_key = "lan_name"
 filter_value = "Baden-Württemberg"
-
 
 filter_geojson(input_geojson, output_geojson, filter_key, filter_value)

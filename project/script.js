@@ -7,27 +7,15 @@ const anzAbstufungen = 6;  //Ändern um Granulatität der Skala anzupassen
 //      legende mit tausender punkten
 document.addEventListener("DOMContentLoaded", () => {
     const overlay = document.createElement("div");
-    overlay.style.position = "fixed";
-    overlay.style.bottom = "10px";
-    overlay.style.left = "10px";
-    overlay.style.display = "flex";
-    overlay.style.justifyContent = "center";
-    overlay.style.alignItems = "center";
-    overlay.style.zIndex = "1000";
+    overlay.classList.add("overlay");
 
     const button = document.createElement("button");
+    button.classList.add("reload-button");
     button.textContent = "Daten neu laden";
-    button.style.padding = "10px 20px";
-    button.style.fontSize = "12px";
-    button.style.border = "none";
-    button.style.borderRadius = "5px";
-    button.style.backgroundColor = "#007BFF";
-    button.style.color = "white";
-    button.style.cursor = "pointer";
 
     button.addEventListener("click", async () => {
         try {
-            overlay.style.display = "none"; // Overlay ausblenden
+            overlay.style.display = "none";
             data = await getData();
             abstufungen = getAbstufung(anzAbstufungen);
             colors = generateColorGradient(anzAbstufungen);
@@ -40,6 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
     overlay.appendChild(button);
     document.body.appendChild(overlay);
 });
+
 
 (async () => {
 data = await getData();
@@ -61,20 +50,18 @@ legend.onAdd = function (map) {
         grades = abstufungen,
         labels = [];
 
-    div.innerHTML += '<strong style="display: block; margin-bottom: 5px;">Bruttoleistung in Watt</strong>';
+    div.innerHTML += '<strong class="legend-title">Bruttoleistung in Watt</strong>';
 
     for (let i = 0; i < grades.length; i++) {
         div.innerHTML += `
-            <div style="display: flex; align-items: center; margin-bottom: 4px;">
-                <i style="background:${colors[i]}; display: inline-block; width: 18px; height: 18px; margin-right: 5px; border-radius: 3px;"></i>
-                <span>
+            <div class="legend-item">
+                <i class="legend-icon" style="background:${colors[i]};"></i>
+                <span class="legend-text">
                     ${formatNumberWithDots(grades[i])} ${grades[i + 1] ? ` &ndash; ${formatNumberWithDots(grades[i + 1])}` : '+'}
                 </span>
             </div>
         `;
     }
-    
-    
 
     return div;
 };
@@ -116,12 +103,15 @@ function generateColorGradient(steps) {
 }
 
 function onEachFeature(feature, layer) {
-    pPerPLZ=getPvPerPLZ(feature.properties.plz_code);
-    formatted = pPerPLZ.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-    layer.bindPopup(
-        '<p><h4>' + feature.properties.plz_code+' '+feature.properties.plz_name + ' </h4></p>'+
-        '<p><h5>Bruttoleistung: '+ formatted+' Watt</h4></p>');
+    const pPerPLZ = getPvPerPLZ(feature.properties.plz_code);
+    const formatted = pPerPLZ.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    
+    layer.bindPopup(`
+        <div class="popup-title">${feature.properties.plz_code} ${feature.properties.plz_name}</div>
+        <div class="popup-subtitle">Bruttoleistung: ${formatted} Watt</div>
+    `);
 }
+
 
 function getPvPerPLZ(plz){
     for(let datax of data.PLZ_PV){

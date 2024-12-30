@@ -1,0 +1,80 @@
+.legend {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: #333;
+    background-color: rgba(255, 255, 255, 0.7) !important;
+    padding: 10px;
+}
+
+.legend-title {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.legend-icon {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    margin-right: 5px;
+    border-radius: 3px;
+}
+
+.legend-text {
+    color: #333;
+    font-size: 12px;
+}
+
+#map {
+    height: 98.6vh;
+    width: 100%;
+}
+
+.legend {
+    background: white;
+    padding: 10px;
+}
+
+.overlay {
+    position: fixed;
+    bottom: 20px;
+    left: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.reload-button {
+    padding: 10px 20px;
+    font-size: 12px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007BFF;
+    color: white;
+    cursor: pointer;
+}
+
+.reload-button:hover {
+    background-color: #0056b3;
+}
+
+.popup-title {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.popup-subtitle {
+    font-size: 13px;
+    color: #555;
+}
+
+
