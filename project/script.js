@@ -5,6 +5,7 @@ let anzAbstufungen = 6;
 let map;
 let geoJsonLayer;
 let barrierFree = false;
+let barrierButtonImgSrc = 'colorblind.png';
 const message = document.querySelector('.message');
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -126,10 +127,9 @@ function createLegend() {
         <div class="legend-controls">
             <button class="control-button" id="legend-plus">+</button>
             <button class="control-button" id="legend-minus">-</button>
-            <button class="control-button" id="legend-barrier"><img src="colorblind.png" alt="Button Icon" class="button-image"/></button>
+            <button class="control-button" id="legend-barrier"><img src="${barrierButtonImgSrc}" alt="Button Icon" class="button-image"/></button>
         </div>
     `;
-
     addLegendControls(div);
     return div;
 }
@@ -166,8 +166,9 @@ function addLegendControls(legendDiv) {
         }
     });
 
-    barrierButton.addEventListener('click', () => {
+    barrierButton.addEventListener('click', function () {
         barrierFree = !barrierFree;
+        barrierButtonImgSrc = barrierFree ? 'colorblindbw.png' : 'colorblind.png';
         updateAbstufungenAndColors();
         updateMap();
         updateLegend();
@@ -195,7 +196,7 @@ function updateLegend() {
             <div class="legend-controls">
                 <button class="control-button" id="legend-plus">+</button>
                 <button class="control-button" id="legend-minus">-</button>
-                <button class="control-button" id="legend-barrier"><img src="colorblind.png" alt="Button Icon" class="button-image"/></button>
+                <button class="control-button" id="legend-barrier"><img src="${barrierButtonImgSrc}" alt="Button Icon" class="button-image"/></button>
             </div>
         `;
 
