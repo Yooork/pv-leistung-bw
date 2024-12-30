@@ -4,6 +4,7 @@ let colors;
 let anzAbstufungen = 6;
 let map;
 let geoJsonLayer;
+let barrierFree = false;
 const message = document.querySelector('.message');
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -26,17 +27,14 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function getData() {
-    //while (true) {
-        try {
-            const response = await fetch("http://127.0.0.1:5000");
-            if (!response.ok) throw new Error(`HTTP-Fehler! Status: ${response.status}`);
-            return await response.json();
-        } catch (error) {
-            showMessage("Bitte den Server starten!", error);
-            //await new Promise(resolve => setTimeout(resolve, 3000));
-            return null;
-        }
-    //}
+    try {
+        const response = await fetch("http://127.0.0.1:5000");
+        if (!response.ok) throw new Error(`HTTP-Fehler! Status: ${response.status}`);
+        return await response.json();
+    } catch (error) {
+        showMessage("Bitte den Server starten!", error);
+        return null;
+    }
 }
 
 async function loadDataAndMap() {
@@ -101,6 +99,7 @@ function createLegend() {
         <div class="legend-controls">
             <button class="control-button" id="legend-plus">+</button>
             <button class="control-button" id="legend-minus">-</button>
+            <button class="control-button" id="legend-barrier">♿</button>
         </div>
     `;
 
@@ -111,6 +110,7 @@ function createLegend() {
 function addLegendControls(legendDiv) {
     const plusButton = legendDiv.querySelector('#legend-plus');
     const minusButton = legendDiv.querySelector('#legend-minus');
+    const barrierButton = legendDiv.querySelector('#legend-barrier');
 
     plusButton.addEventListener('click', () => {
         if (anzAbstufungen < 15) {
@@ -135,6 +135,13 @@ function addLegendControls(legendDiv) {
             showMessage('Die Anzahl der Abstufungen kann nicht weiter reduziert werden!');
         }
     });
+
+    barrierButton.addEventListener('click', () => {
+        barrierFree = !barrierFree;
+        updateAbstufungenAndColors();
+        updateMap();
+        updateLegend();
+    });
 }
 
 function updateLegend() {
@@ -158,6 +165,7 @@ function updateLegend() {
             <div class="legend-controls">
                 <button class="control-button" id="legend-plus">+</button>
                 <button class="control-button" id="legend-minus">-</button>
+                <button class="control-button" id="legend-barrier">♿</button>
             </div>
         `;
 
@@ -187,9 +195,15 @@ function style(feature) {
 }
 
 function generateColorGradient(steps) {
+    if(!barrierFree){
+        return Array.from({ length: steps }, (_, i) => {
+            const hue = 120 * (i / (steps - 1)); // 0 (rot) bis 120 (grün)
+            return `hsl(${hue}, 70%, 50%)`;
+        });
+    }
     return Array.from({ length: steps }, (_, i) => {
-        const lightness = 90 - (80 * i) / (steps - 1); // Von 10% (dunkel) bis 90% (hell)
-        return `hsl(240, 100%, ${lightness}%)`; // 240 ist der Farbton für Blau
+        const lightness = 10 + (80 * i) / (steps - 1);
+        return `hsl(240, 100%, ${lightness}%)`;
     });
 }
 
