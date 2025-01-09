@@ -1,10 +1,10 @@
 body {
     margin: 0;
+    font-family: Arial, sans-serif;
 }
 
 /* Legende */
 .legend {
-    font-family: Arial, sans-serif;
     font-size: 14px;
     color: #333;
     background-color: rgba(255, 255, 255, 0.7) !important;
@@ -137,7 +137,6 @@ body {
     text-align: center;
     box-sizing: border-box;
     z-index: 10000;
-    font-family: Arial, sans-serif;
 }
 
 /* menu overlay */
@@ -180,7 +179,6 @@ body {
     height: 20px;
     font-size: 20px;
     color: #E8EAED;
-    font-family: "Playfair Display", serif;
     font-optical-sizing: auto;
     font-weight: 600;
     font-style: normal;
