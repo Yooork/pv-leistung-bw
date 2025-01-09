@@ -70,6 +70,8 @@ function createMenu() {
     menuTitle.textContent = "PV-Leistungen in Baden-Württemberg";
     document.body.appendChild(menuTitle);
 
+    createBurgerMenu();
+
     menu.classList.add("menu");
     menuMain.classList.add("menuMain");
     menuFog.classList.add("menuFog");
@@ -80,6 +82,64 @@ function createMenu() {
     menuMain.appendChild(menuIcon);
     menu.appendChild(menuFog);
     return menu;
+}
+
+function createBurgerMenu() {
+    const menu = document.createElement("div");
+    menu.classList.add("burgerMenu");
+
+    const menuMain = document.createElement("div");
+    menuMain.classList.add("burgerMenu-main");
+
+    const menuList = document.createElement("ul");
+    menuList.classList.add("burgerMenu-list");
+
+    const menuButton = document.createElement("button");
+    menuButton.textContent = "☰";
+    menuButton.classList.add("burgerMenu-button");
+    menuButton.addEventListener("click", () => {
+        menuMain.classList.toggle("burgerMenu-main.open");
+    });
+
+    // Populate the menu list
+    if (data && data.PLZ_PV) {
+        data.PLZ_PV.sort((a, b) => a.PLZ - b.PLZ).forEach(item => {
+            const listItem = document.createElement("li");
+            listItem.textContent = `${item.PLZ} - ${item.Ort} - ${formatNumberWithDots(item.PV)} W`;
+            listItem.addEventListener("click", () => {
+                highlightPLZ(item.PLZ);
+            });
+            menuList.appendChild(listItem);
+        });
+    }
+
+    menuMain.appendChild(menuList);
+    menu.appendChild(menuButton);
+    menu.appendChild(menuMain);
+    document.body.appendChild(menu);
+}
+
+function highlightPLZ(plz) {
+    geoJsonLayer.eachLayer(layer => {
+        if (layer.feature.properties.plz_code === plz) {
+            layer.setStyle({
+                weight: 3,
+                color: 'yellow',
+                fillColor: 'orange',
+                fillOpacity: 0.7
+            });
+
+            // Center map on the selected PLZ
+            const bounds = layer.getBounds();
+            map.fitBounds(bounds);
+
+            // Show popup
+            layer.openPopup();
+        } else {
+            // Reset other styles
+            layer.setStyle(style(layer.feature));
+        }
+    });
 }
 
 function updateAbstufungenAndColors() {

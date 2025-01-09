@@ -186,3 +186,59 @@ body {
     font-style: normal;
     z-index: 2000;
 }
+
+/* Burger-Menü */
+.burgerMenu {
+    position: fixed;
+    display: flex;
+    top: 0;
+    right: 0;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 1);
+    transition: 0.3s;
+    z-index: 2000;
+}
+
+.burgerMenu-main {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: calc(100%-60px);
+    background-color: rgba(0, 0, 0, 1);
+    transform: translateX(-100%);
+    transition: 0.3s;
+}
+
+.burgerMenu-button {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    height: 40px;
+    width: 40px;
+    font-size: 30px;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-width: 0px;
+    font-family: "Playfair Display", serif;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-style: normal;
+    z-index: 2000;
+}
+
+.burgerMenu ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.burgerMenu li {
+    padding: 15px;
+    border-bottom: 1px solid #ccc;
+    cursor: pointer;
+}
+
+.burgerMenu li:hover {
+    background-color: #f1f1f1;
+}
