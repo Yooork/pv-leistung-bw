@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function getData() {
     try {
-        const response = await fetch("http://getfitwithme.de:5000", { mode: "cors" });
+        const response = await fetch("https://getfitwithme.de:5000", { mode: "cors" });
         if (!response.ok) throw new Error(`HTTP-Fehler! Status: ${response.status}`);
         return await response.json();
     } catch (error) {
