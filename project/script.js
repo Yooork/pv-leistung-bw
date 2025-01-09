@@ -5,7 +5,7 @@ let anzAbstufungen = 6;
 let map;
 let geoJsonLayer;
 let barrierFree = false;
-let barrierButtonImgSrc = 'img/colorblindColor.png';
+let barrierButtonImgSrc = 'img/colorblind_off.png';
 const message = document.querySelector('.message');
 
 /*
@@ -172,7 +172,7 @@ function addLegendControls(legendDiv) {
 
     barrierButton.addEventListener('click', () => {
         barrierFree = !barrierFree;
-        barrierButtonImgSrc = barrierFree ? 'img/colorblindWhite.png' : 'img/colorblindColor.png';
+        barrierButtonImgSrc = barrierFree ? 'img/colorblind_on.png' : 'img/colorblind_off.png';
         updateAbstufungenAndColors();
         updateMap();
         updateLegend();
