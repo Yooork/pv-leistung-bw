@@ -93,7 +93,7 @@ function createBurgerMenu() {
     const menuList = document.createElement("ul");
 
     const searchBar = document.createElement("input");
-    searchBar.placeholder = "Search for";
+    searchBar.placeholder = "Suche nach...";
     searchBar.addEventListener("keyup", () => {
         var filter = searchBar.value.toUpperCase();
         var lis = menuList.querySelectorAll("li");
@@ -158,8 +158,6 @@ function highlightPLZ(plz) {
         if (layer.feature.properties.plz_code === plz) {
             layer.setStyle({
                 weight: 3,
-                color: 'yellow',
-                fillColor: 'orange',
                 fillOpacity: 0.7
             });
 
