@@ -268,7 +268,6 @@ function getAbstufung(anzAbstufungen) {
     for (let i = 0; i < anzAbstufungen; i++) {
         let abstufung = Math.round((max / anzAbstufungen) * i);
         abstufung = Math.ceil(abstufung / 10000) * 10000;
-        // wollen wir das?
         abstufungen.push(abstufung);
     }
 
