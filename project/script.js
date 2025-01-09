@@ -6,11 +6,10 @@ let map;
 let geoJsonLayer;
 let barrierFree = false;
 let barrierButtonImgSrc = 'img/colorblind_off.png';
+let burgerMenu = false;
+let burgerMenuButtonImg = 'img/burger_menu.png';
 const message = document.querySelector('.message');
 
-/*
-    TODO: Burger Menü, beim ausklappen sortierbare liste der PLZ - Ortschaften - Leistung, nach anklicken wird auf der map der plz kreisentsprechend gehighlighteda
-*/
 
 document.addEventListener("DOMContentLoaded", () => {
     const overlay = createOverlay();
@@ -92,13 +91,43 @@ function createBurgerMenu() {
     menuMain.classList.add("burgerMenu-main");
 
     const menuList = document.createElement("ul");
-    menuList.classList.add("burgerMenu-list");
+
+    const searchBar = document.createElement("input");
+    searchBar.placeholder = "Search for";
+    searchBar.addEventListener("keyup", () => {
+        var filter = searchBar.value.toUpperCase();
+        var lis = menuList.querySelectorAll("li");
+        for (var i = 0; i < lis.length; i++) {
+            var name = lis[i].textContent;
+            if (name.toUpperCase().includes(filter))
+                lis[i].style.display = 'list-item';
+            else
+                lis[i].style.display = 'none';
+        }
+    });
+
+    const menuButtonIcon = document.createElement("img");
+    menuButtonIcon.classList.add("buttonImage");
+    menuButtonIcon.src = 'img/burger_menu.png';
 
     const menuButton = document.createElement("button");
-    menuButton.textContent = "☰";
     menuButton.classList.add("burgerMenu-button");
     menuButton.addEventListener("click", () => {
         menuMain.classList.toggle("open");
+        burgerMenu = !burgerMenu;
+        gsap.to(menuButtonIcon, {
+            duration: 0.2,
+            opacity: 0,
+            onComplete: () => {
+                menuButtonIcon.src = burgerMenu ? 'img/close.png' : 'img/burger_menu.png';
+                gsap.to(menuButtonIcon, {
+                    duration: 0.2,
+                    opacity: 1,
+                });
+            }
+        });
+
+        document.getElementsByClassName("legend")[0].classList.toggle("open");
     });
 
     // Populate the menu list
@@ -107,7 +136,7 @@ function createBurgerMenu() {
             const feature = orte.features.find(item => item.properties?.name === datax.PLZ);
             if (feature?.properties?.plz_name) {
                 const listItem = document.createElement("li");
-                listItem.textContent = `${datax.PLZ} - ${feature.properties.plz_name} - ${formatNumberWithDots(datax.PV)} W`;
+                listItem.innerHTML = `<div class="liOver">${datax.PLZ} ${feature.properties.plz_name}</div><div class="liUnder">${formatNumberWithDots(datax.PV)} W</div>`;
                 listItem.addEventListener("click", () => {
                     highlightPLZ(datax.PLZ);
                 });
@@ -115,11 +144,10 @@ function createBurgerMenu() {
             }
         }
     }
-    const listItem = document.createElement("li");
-    listItem.textContent = "BHghfuIHU=G)OPIOUFE"
-    menuList.appendChild(listItem);
 
+    menuButton.appendChild(menuButtonIcon);
     menuMain.appendChild(menuList);
+    menuMain.appendChild(searchBar);
     menu.appendChild(menuButton);
     menu.appendChild(menuMain);
     document.body.appendChild(menu);

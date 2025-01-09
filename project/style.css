@@ -11,6 +11,11 @@ body {
     padding: 10px;
     max-height: 50vh;
     overflow-y: auto;
+    transition: 0.3s;
+}
+
+.legend.open {
+    transform: translateX(-300px);
 }
 
 .legend-title {
@@ -55,7 +60,7 @@ body {
     border: 2px solid;
     border-radius: 5px;
     border-color: rgba(0, 0, 0, 0);
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: #1e3c24;
     color: white;
     cursor: pointer;
     transition: 0.3s;
@@ -96,7 +101,7 @@ body {
     border: 2px solid;
     border-radius: 5px;
     border-color: rgba(0, 0, 0, 0);
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: #1e3c24;
     color: white;
     cursor: pointer;
     transition: 0.3s;
@@ -104,7 +109,7 @@ body {
 
 .reload-button:hover,
 .control-button:hover {
-    background-color: rgba(255, 255, 255, 0.7);
+    background-color: #ffffff33;
     color: black;
     border: 2px black solid;
     box-sizing: border-box;
@@ -201,11 +206,13 @@ body {
     position: absolute;
     top: 60px;
     left: 0;
-    width: 400px;
+    width: 300px;
     height: calc(100% - 60px);
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: #2d5736d9;
+    color: white;
     transform: translateX(0);
     transition: 0.3s;
+    font-size: 16px;
 }
 
 .burgerMenu-main.open {
@@ -214,35 +221,80 @@ body {
 
 .burgerMenu-button {
     position: absolute;
-    top: 15px;
+    top: 10px;
     right: 15px;
     height: 40px;
     width: 40px;
     font-size: 30px;
     color: white;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0);
     border-width: 0px;
     font-optical-sizing: auto;
     font-weight: 600;
     font-style: normal;
     z-index: 2000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
+.buttonImage {
+    height: 40px;
+    width: 40px;
+    object-fit: contain;
+    margin: auto;
+}
 
 .burgerMenu-main ul {
     list-style-type: none;
-    height: 100%;
+    position: absolute;
+    width: 100%;
+    top: 45px;
+    height: calc(100% - 40px);
     padding: 0;
     margin: 0;
     overflow-y: auto;
 }
 
+.burgerMenu-main input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 40px;
+    width: 100%;
+    font-size: 16px;
+    padding-left: 15px;
+    border: solid 2px black;
+    background-color: #1e3c24;
+    color: white;
+}
+
+.burgerMenu-main input:focus {
+    outline-width: 0;
+    outline: none;
+}
+
 .burgerMenu-main li {
-    padding: 15px;
+    padding: 7px;
+    width: calc(100% - 14px);
     border-bottom: 1px solid #ccc;
     cursor: pointer;
 }
 
 .burgerMenu-main li:hover {
-    background-color: #f1f1f1;
+    background-color: #ffffff33;
+}
+
+.liOver {
+    font-size: 16px;
+    font-weight: bold;
+    display: inline-block;
+    max-width: 300px;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.liUnder {
+    font-size: 12px;
 }
