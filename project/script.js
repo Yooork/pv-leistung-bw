@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
             updateMap();
             updateLegend();
             showMessage('Die Daten wurden neu geladen!');
-            createBurgerMenu();
+            //createBurgerMenu();
         } catch (error) {
             showMessage("Fehler beim Neuladen der Daten:", error);
         }
