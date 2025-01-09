@@ -200,18 +200,22 @@ body {
 }
 
 .burgerMenu-main {
-    position: fixed;
-    top: 0;
+    position: absolute;
+    top: 60px;
     left: 0;
-    width: 250px;
-    height: calc(100%-60px);
-    background-color: rgba(0, 0, 0, 1);
-    transform: translateX(-100%);
+    width: 400px;
+    height: calc(100% - 60px);
+    background-color: rgba(0, 0, 0, 0.3);
+    transform: translateX(0);
     transition: 0.3s;
 }
 
+.burgerMenu-main.open {
+    transform: translateX(-100%);
+}
+
 .burgerMenu-button {
-    position: fixed;
+    position: absolute;
     top: 15px;
     right: 15px;
     height: 40px;
@@ -227,18 +231,19 @@ body {
     z-index: 2000;
 }
 
-.burgerMenu ul {
+
+.burgerMenu-main ul {
     list-style-type: none;
     padding: 0;
     margin: 0;
 }
 
-.burgerMenu li {
+.burgerMenu-main li {
     padding: 15px;
     border-bottom: 1px solid #ccc;
     cursor: pointer;
 }
 
-.burgerMenu li:hover {
+.burgerMenu-main li:hover {
     background-color: #f1f1f1;
 }

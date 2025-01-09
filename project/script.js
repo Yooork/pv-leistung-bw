@@ -98,14 +98,14 @@ function createBurgerMenu() {
     menuButton.textContent = "☰";
     menuButton.classList.add("burgerMenu-button");
     menuButton.addEventListener("click", () => {
-        menuMain.classList.toggle("burgerMenu-main.open");
+        menuMain.classList.toggle("open");
     });
 
     // Populate the menu list
     if (data && data.PLZ_PV) {
         data.PLZ_PV.sort((a, b) => a.PLZ - b.PLZ).forEach(item => {
             const listItem = document.createElement("li");
-            listItem.textContent = `${item.PLZ} - ${item.Ort} - ${formatNumberWithDots(item.PV)} W`;
+            listItem.textContent = '${item.PLZ} - ${item.Ort} - ${formatNumberWithDots(item.PV)} W';
             listItem.addEventListener("click", () => {
                 highlightPLZ(item.PLZ);
             });
