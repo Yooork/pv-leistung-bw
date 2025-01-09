@@ -137,7 +137,6 @@ body {
     text-align: center;
     box-sizing: border-box;
     z-index: 10000;
-    font-family: Arial, sans-serif;
 }
 
 /* menu overlay */
@@ -180,7 +179,6 @@ body {
     height: 20px;
     font-size: 20px;
     color: #E8EAED;
-    font-family: "Playfair Display", serif;
     font-optical-sizing: auto;
     font-weight: 600;
     font-style: normal;
@@ -224,7 +222,6 @@ body {
     color: white;
     background-color: rgba(0, 0, 0, 0.5);
     border-width: 0px;
-    font-family: "Playfair Display", serif;
     font-optical-sizing: auto;
     font-weight: 600;
     font-style: normal;
@@ -234,8 +231,10 @@ body {
 
 .burgerMenu-main ul {
     list-style-type: none;
+    height: 100%;
     padding: 0;
     margin: 0;
+    overflow-y: auto;
 }
 
 .burgerMenu-main li {

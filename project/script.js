@@ -26,6 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
             updateMap();
             updateLegend();
             showMessage('Die Daten wurden neu geladen!');
+            createBurgerMenu();
         } catch (error) {
             showMessage("Fehler beim Neuladen der Daten:", error);
         }
@@ -49,7 +50,7 @@ async function loadDataAndMap() {
     data = await getData();
     if (data) {
         updateAbstufungenAndColors();
-
+        createBurgerMenu();
         map = L.map('map').setView([48.791, 9.195], 8);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -70,7 +71,6 @@ function createMenu() {
     menuTitle.textContent = "PV-Leistungen in Baden-Württemberg";
     document.body.appendChild(menuTitle);
 
-    createBurgerMenu();
 
     menu.classList.add("menu");
     menuMain.classList.add("menuMain");
@@ -103,15 +103,21 @@ function createBurgerMenu() {
 
     // Populate the menu list
     if (data && data.PLZ_PV) {
-        data.PLZ_PV.sort((a, b) => a.PLZ - b.PLZ).forEach(item => {
-            const listItem = document.createElement("li");
-            listItem.textContent = '${item.PLZ} - ${item.Ort} - ${formatNumberWithDots(item.PV)} W';
-            listItem.addEventListener("click", () => {
-                highlightPLZ(item.PLZ);
-            });
-            menuList.appendChild(listItem);
-        });
+        for (let datax of data.PLZ_PV) {
+            const feature = orte.features.find(item => item.properties?.name === datax.PLZ);
+            if (feature?.properties?.plz_name) {
+                const listItem = document.createElement("li");
+                listItem.textContent = `${datax.PLZ} - ${feature.properties.plz_name} - ${formatNumberWithDots(datax.PV)} W`;
+                listItem.addEventListener("click", () => {
+                    highlightPLZ(datax.PLZ);
+                });
+                menuList.appendChild(listItem);
+            }
+        }
     }
+    const listItem = document.createElement("li");
+    listItem.textContent = "BHghfuIHU=G)OPIOUFE"
+    menuList.appendChild(listItem);
 
     menuMain.appendChild(menuList);
     menu.appendChild(menuButton);
