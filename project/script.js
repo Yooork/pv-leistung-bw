@@ -225,7 +225,7 @@ function style(feature) {
         weight: 1,
         opacity: 1,
         color: 'white',
-        fillOpacity: 0.95
+        fillOpacity: 1
     };
 }
 
