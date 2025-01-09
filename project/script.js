@@ -26,6 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
             updateMap();
             updateLegend();
             showMessage('Die Daten wurden neu geladen!');
+            createBurgerMenu();
         } catch (error) {
             showMessage("Fehler beim Neuladen der Daten:", error);
         }
@@ -49,7 +50,7 @@ async function loadDataAndMap() {
     data = await getData();
     if (data) {
         updateAbstufungenAndColors();
-
+        createBurgerMenu();
         map = L.map('map').setView([48.791, 9.195], 8);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -70,6 +71,7 @@ function createMenu() {
     menuTitle.textContent = "PV-Leistungen in Baden-Württemberg";
     document.body.appendChild(menuTitle);
 
+
     menu.classList.add("menu");
     menuMain.classList.add("menuMain");
     menuFog.classList.add("menuFog");
@@ -80,6 +82,70 @@ function createMenu() {
     menuMain.appendChild(menuIcon);
     menu.appendChild(menuFog);
     return menu;
+}
+
+function createBurgerMenu() {
+    const menu = document.createElement("div");
+    menu.classList.add("burgerMenu");
+
+    const menuMain = document.createElement("div");
+    menuMain.classList.add("burgerMenu-main");
+
+    const menuList = document.createElement("ul");
+    menuList.classList.add("burgerMenu-list");
+
+    const menuButton = document.createElement("button");
+    menuButton.textContent = "☰";
+    menuButton.classList.add("burgerMenu-button");
+    menuButton.addEventListener("click", () => {
+        menuMain.classList.toggle("open");
+    });
+
+    // Populate the menu list
+    if (data && data.PLZ_PV) {
+        for (let datax of data.PLZ_PV) {
+            const feature = orte.features.find(item => item.properties?.name === datax.PLZ);
+            if (feature?.properties?.plz_name) {
+                const listItem = document.createElement("li");
+                listItem.textContent = `${datax.PLZ} - ${feature.properties.plz_name} - ${formatNumberWithDots(datax.PV)} W`;
+                listItem.addEventListener("click", () => {
+                    highlightPLZ(datax.PLZ);
+                });
+                menuList.appendChild(listItem);
+            }
+        }
+    }
+    const listItem = document.createElement("li");
+    listItem.textContent = "BHghfuIHU=G)OPIOUFE"
+    menuList.appendChild(listItem);
+
+    menuMain.appendChild(menuList);
+    menu.appendChild(menuButton);
+    menu.appendChild(menuMain);
+    document.body.appendChild(menu);
+}
+
+function highlightPLZ(plz) {
+    geoJsonLayer.eachLayer(layer => {
+        if (layer.feature.properties.plz_code === plz) {
+            layer.setStyle({
+                weight: 3,
+                color: 'yellow',
+                fillColor: 'orange',
+                fillOpacity: 0.7
+            });
+
+            // Center map on the selected PLZ
+            const bounds = layer.getBounds();
+            map.fitBounds(bounds);
+
+            // Show popup
+            layer.openPopup();
+        } else {
+            // Reset other styles
+            layer.setStyle(style(layer.feature));
+        }
+    });
 }
 
 function updateAbstufungenAndColors() {
