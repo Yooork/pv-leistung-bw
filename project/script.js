@@ -5,7 +5,7 @@ let anzAbstufungen = 6;
 let map;
 let geoJsonLayer;
 let barrierFree = false;
-let barrierButtonImgSrc = 'colorblind.png';
+let barrierButtonImgSrc = 'img/colorblindColor.png';
 const message = document.querySelector('.message');
 
 /*
@@ -41,7 +41,7 @@ async function getData() {
         return await response.json();
     } catch (error) {
         showMessage("Bitte den Server starten!", error);
-        sleep(1000);
+        sleep(500);
     }
 }
 
@@ -65,7 +65,7 @@ function createMenu() {
     const menuMain = document.createElement("div");
     const menuFog = document.createElement("div");
     const menuIcon = document.createElement("img");
-    menuIcon.src = "solar_power_24dp_E8EAED_FILL0_wght400_GRAD0_opsz24.png";
+    menuIcon.src = "img/solarWhite.png";
     const menuTitle = document.createElement("div");
     menuTitle.textContent = "PV-Leistungen in Baden-Württemberg";
     document.body.appendChild(menuTitle);
@@ -172,7 +172,7 @@ function addLegendControls(legendDiv) {
 
     barrierButton.addEventListener('click', () => {
         barrierFree = !barrierFree;
-        barrierButtonImgSrc = barrierFree ? 'colorblindbw.png' : 'colorblind.png';
+        barrierButtonImgSrc = barrierFree ? 'img/colorblindWhite.png' : 'img/colorblindColor.png';
         updateAbstufungenAndColors();
         updateMap();
         updateLegend();
