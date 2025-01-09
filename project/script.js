@@ -9,7 +9,7 @@ let barrierButtonImgSrc = 'colorblind.png';
 const message = document.querySelector('.message');
 
 /*
-    TODO: Burger Menü, beim ausklappen sortierbare liste der PLZ - Ortschaften - Leistung, nach anklicken wird entsprechend gehighlighted
+    TODO: Burger Menü, beim ausklappen sortierbare liste der PLZ - Ortschaften - Leistung, nach anklicken wird entsprechend gehighlighteda
 */
 
 document.addEventListener("DOMContentLoaded", () => {
