@@ -65,4 +65,3 @@ with open(os.path.join(js_dir, "bw-geodata.js"), "w") as jsfile:
     jsfile.write(";")
 
 print("Die Flächen wurden berechnet und die Dateien erstellt.")
-
