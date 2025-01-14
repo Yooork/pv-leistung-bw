@@ -64,5 +64,5 @@ with open(os.path.join(js_dir, "bw-geodata.js"), "w") as jsfile:
     json.dump(geojson, jsfile, indent=2)
     jsfile.write(";")
 
-print("Die Flächen wurden berechnet und die Dateien wurden im Ordner '../output_files' erstellt.")
+print("Die Flächen wurden berechnet und die Dateien erstellt.")
 
