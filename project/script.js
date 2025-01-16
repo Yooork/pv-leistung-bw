@@ -12,6 +12,8 @@ const message = document.querySelector('.message');
 let perArea = false;
 let quantil = false;
 let areaIcon = 'bolt';
+let quantilIcon = 'menu';
+let eyeIcon = 'visibility_off';
 
 document.addEventListener("DOMContentLoaded", () => {
     const overlay = createOverlay();
@@ -220,7 +222,7 @@ function createLegend() {
             <div class="legend-item">
                 <i class="legend-icon" style="background:${colors[i]}"></i>
                 <span class="legend-text">
-                    ${formatNumberWithDots(grade)} ${abstufungen[i + 1] ? ` &ndash; ${formatNumberWithDots(abstufungen[i + 1])} W/qm` : '+ W/qm'}
+                    ${formatNumberWithDots(grade / 1000)} ${abstufungen[i + 1] ? ` &ndash; ${formatNumberWithDots(abstufungen[i + 1] / 1000)} W/qm` : '+ W/qm'}
                 </span>
             </div>
         `;
@@ -229,7 +231,7 @@ function createLegend() {
             <div class="legend-item">
                 <i class="legend-icon" style="background:${colors[i]}"></i>
                 <span class="legend-text">
-                    ${formatNumberWithDots(grade)} ${abstufungen[i + 1] ? ` &ndash; ${formatNumberWithDots(abstufungen[i + 1])} kW` : '+ kW'}
+                ${formatNumberWithDots(grade / 1000)} ${abstufungen[i + 1] ? ` &ndash; ${formatNumberWithDots(abstufungen[i + 1] / 1000)} kW` : '+ kW'}
                 </span>
             </div>
         `;
@@ -239,10 +241,10 @@ function createLegend() {
     div.innerHTML += `
         <div class="legend-controls">
             <button class="control-button" id="legend-area"><span class="material-symbols-outlined">${areaIcon}</span></button>
-            <button class="control-button" id="legend-quantil">Quantil</button>
-            <button class="control-button" id="legend-plus">+</button>
-            <button class="control-button" id="legend-minus">-</button>
-            <button class="control-button" id="legend-barrier"><img src="${barrierButtonImgSrc}" alt="Button Icon" class="button-image"/></button>
+            <button class="control-button" id="legend-quantil"><span class="material-symbols-outlined">${quantilIcon}</span></button>
+            <button class="control-button" id="legend-plus"><span class="material-symbols-outlined">add</span></button>
+            <button class="control-button" id="legend-minus"><span class="material-symbols-outlined">remove</span></button>
+            <button class="control-button" id="legend-barrier"><span class="material-symbols-outlined">${eyeIcon}</span></button>
         </div>
     `;
     addLegendControls(div);
@@ -287,7 +289,7 @@ function addLegendControls(legendDiv) {
 
     barrierButton.addEventListener('click', () => {
         barrierFree = !barrierFree;
-        barrierButtonImgSrc = barrierFree ? 'img/colorblind_on.png' : 'img/colorblind_off.png';
+        eyeIcon = (eyeIcon === 'visibility') ? 'visibility_off' : 'visibility';
         updateAbstufungenAndColors();
         updateMap();
         updateLegend();
@@ -303,6 +305,7 @@ function addLegendControls(legendDiv) {
     });
 
     quantilButton.addEventListener('click', () => {
+        quantilIcon = (quantilIcon === 'sort') ? 'menu' : 'sort';
         quantil = !quantil;
         updateAbstufungenAndColors();
         updateMap();
@@ -340,13 +343,13 @@ function updateLegend() {
         });
 
         legend.innerHTML += `
-            <div class="legend-controls">
+           <div class="legend-controls">
             <button class="control-button" id="legend-area"><span class="material-symbols-outlined">${areaIcon}</span></button>
-            <button class="control-button" id="legend-quantil">Quantil</button>
-                <button class="control-button" id="legend-plus">+</button>
-                <button class="control-button" id="legend-minus">-</button>
-                <button class="control-button" id="legend-barrier"><img src="${barrierButtonImgSrc}" alt="Button Icon" class="button-image"/></button>
-            </div>
+            <button class="control-button" id="legend-quantil"><span class="material-symbols-outlined">${quantilIcon}</span></button>
+            <button class="control-button" id="legend-plus"><span class="material-symbols-outlined">add</span></button>
+            <button class="control-button" id="legend-minus"><span class="material-symbols-outlined">remove</span></button>
+            <button class="control-button" id="legend-barrier"><span class="material-symbols-outlined">${eyeIcon}</span></button>
+        </div>
         `;
 
         addLegendControls(legend);
