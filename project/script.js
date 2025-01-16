@@ -9,7 +9,8 @@ let barrierButtonImgSrc = 'img/colorblind_off.png';
 let burgerMenu = false;
 let burgerMenuButtonImg = 'img/burger_menu.png';
 const message = document.querySelector('.message');
-
+let perArea = false;
+let quantil =false;
 
 document.addEventListener("DOMContentLoaded", () => {
     const overlay = createOverlay();
@@ -175,7 +176,7 @@ function highlightPLZ(plz) {
 }
 
 function updateAbstufungenAndColors() {
-    abstufungen = getAbstufung2(anzAbstufungen);
+    abstufungen = quantil?getAbstufungenQuantile(anzAbstufungen,perArea):getAbstufungen(anzAbstufungen,perArea);
     console.log("Abstufungen:", abstufungen); // Debugging
     colors = generateColorGradient(anzAbstufungen);
     console.log("Colors:", colors); // Debugging
@@ -209,7 +210,8 @@ function createOverlay() {
 
 function createLegend() {
     const div = L.DomUtil.create('div', 'legend');
-    div.innerHTML = '<strong class="legend-title">Bruttoleistung in Watt</strong>';
+    div.innerHTML = perArea?'<strong class="legend-title">Bruttoleistung pro Fläche<br>in Watt/qm</strong>':'<strong class="legend-title">Bruttoleistung in Watt</strong>'; //dynamic for the different adjustments
+    
 
     abstufungen.forEach((grade, i) => {
         div.innerHTML += `
@@ -224,6 +226,8 @@ function createLegend() {
 
     div.innerHTML += `
         <div class="legend-controls">
+            <button class="control-button" id="legend-area">Area</button>
+            <button class="control-button" id="legend-quantil">Quantil</button>
             <button class="control-button" id="legend-plus">+</button>
             <button class="control-button" id="legend-minus">-</button>
             <button class="control-button" id="legend-barrier"><img src="${barrierButtonImgSrc}" alt="Button Icon" class="button-image"/></button>
@@ -237,9 +241,13 @@ function addLegendControls(legendDiv) {
     const plusButton = legendDiv.querySelector('#legend-plus');
     const minusButton = legendDiv.querySelector('#legend-minus');
     const barrierButton = legendDiv.querySelector('#legend-barrier');
+    const areaButton = legendDiv.querySelector('#legend-area');
+    const quantilButton = legendDiv.querySelector('#legend-quantil');
     plusButton.title = "Abstufungen erhöhen";
     minusButton.title = "Abstufungen verringern";
     barrierButton.title = "Barrierefreier Modus";
+    areaButton.title = "Toggle per Area";
+    quantilButton.title = "Toggle Quantilskala"
 
     plusButton.addEventListener('click', () => {
         if (anzAbstufungen < 15) {
@@ -272,14 +280,28 @@ function addLegendControls(legendDiv) {
         updateMap();
         updateLegend();
     });
+
+    areaButton.addEventListener('click',()=>{
+        perArea=!perArea;
+        updateAbstufungenAndColors();
+        updateMap();
+        updateLegend();
+    });
+
+    quantilButton.addEventListener('click',()=>{
+        quantil=!quantil;
+        updateAbstufungenAndColors();
+        updateMap();
+        updateLegend();
+    });
 }
 
 function updateLegend() {
     const legend = document.querySelector('.legend');
     if (legend) {
         legend.innerHTML = '';
-        legend.innerHTML = '<strong class="legend-title">Bruttoleistung in Watt</strong>';
-
+        legend.innerHTML = perArea?'<strong class="legend-title">Bruttoleistung pro Fläche<br> in Watt/qm</strong>':'<strong class="legend-title">Bruttoleistung in Watt</strong>'; //dynamic for the different adjustments
+    
         abstufungen.forEach((grade, i) => {
             legend.innerHTML += `
                 <div class="legend-item">
@@ -293,6 +315,8 @@ function updateLegend() {
 
         legend.innerHTML += `
             <div class="legend-controls">
+            <button class="control-button" id="legend-area">Area</button>
+            <button class="control-button" id="legend-quantil">Quantil</button>
                 <button class="control-button" id="legend-plus">+</button>
                 <button class="control-button" id="legend-minus">-</button>
                 <button class="control-button" id="legend-barrier"><img src="${barrierButtonImgSrc}" alt="Button Icon" class="button-image"/></button>
@@ -316,7 +340,7 @@ function getColor(pv) {
 
 function style(feature) {
     return {
-        fillColor: getColor(getPVPerSqmPerPLZ(feature.properties.plz_code)),
+        fillColor: getColor(perArea?getPVPerSqmPerPLZ(feature.properties.plz_code):getPvPerPLZ(feature.properties.plz_code)),
         weight: 1,
         opacity: 1,
         color: 'white',
@@ -338,12 +362,19 @@ function generateColorGradient(steps) {
 }
 
 function onEachFeature(feature, layer) {
-    const pPerPLZ = getPvPerPLZ(feature.properties.plz_code);
-    const formatted = formatNumberWithDots(pPerPLZ);
+    const value = perArea?getPVPerSqmPerPLZ(feature.properties.plz_code):getPvPerPLZ(feature.properties.plz_code);
+    const formatted = formatNumberWithDots(value);
+    if(perArea){
+        layer.bindPopup(`
+            <div class="popup-title">${feature.properties.plz_code} ${feature.properties.plz_name}</div>
+            <div class="popup-subtitle">Bruttoleistung pro Fläche: ${formatted} Watt</div>
+        `);
+    }else{
     layer.bindPopup(`
         <div class="popup-title">${feature.properties.plz_code} ${feature.properties.plz_name}</div>
         <div class="popup-subtitle">Bruttoleistung: ${formatted} Watt</div>
     `);
+    }
 }
 
 function getPvPerPLZ(plz) {
@@ -385,24 +416,26 @@ function getAbstufungenQuantile(anzAbstufungen, perArea){ //perArea flag to togg
 }
 
 function getAbstufungen(anzAbstufungen, perArea){ //perArea flag to toggle between just bruttoleistung and per Area
-    let max = 0;
+    var max = 0;
+    counter = 0;
     for (let datax of data.PLZ_PV) {
+        counter+=Number(datax.PV);
         if(perArea==true){
             if (getPVPerSqmPerPLZ(datax.PLZ) > max) {
                 max = getPVPerSqmPerPLZ(datax.PLZ);
                 console.log(max, datax.PLZ, 'xx')
             }
         }else{
-            if (datax.PV > max) {
+            if (max-datax.PV <0) {
                 max = datax.PV;
             }
         }
     }
-
+    console.log(counter);
     const abstufungen = [];
     for (let i = 0; i < anzAbstufungen; i++) {
         let abstufung = Math.round((max / anzAbstufungen) * i);
-        abstufung = Math.ceil(abstufung / 10000) * 10000;
+        if(!perArea)abstufung = Math.ceil(abstufung / 10000) * 10000;
         abstufungen.push(abstufung);
     }
 
