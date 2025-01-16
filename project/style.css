@@ -20,12 +20,12 @@ body {
 
 .legend-title {
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 0px;
     font-weight: bold;
     font-size: 12px;
 }
 
-.legend-subtitle{
+.legend-subtitle {
     display: block;
     margin-bottom: 5px;
     font-weight: lighter;

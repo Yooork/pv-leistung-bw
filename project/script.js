@@ -11,6 +11,9 @@ let burgerMenuButtonImg = 'img/burger_menu.png';
 const message = document.querySelector('.message');
 let perArea = false;
 let quantil = false;
+let areaIcon = 'bolt';
+let quantilIcon = 'menu';
+let eyeIcon = 'visibility_off';
 
 document.addEventListener("DOMContentLoaded", () => {
     const overlay = createOverlay();
@@ -211,24 +214,24 @@ function createOverlay() {
 function createLegend() {
     const div = L.DomUtil.create('div', 'legend');
     div.innerHTML = perArea ? '<strong class="legend-title">Bruttoleistung pro Fläche</strong>' : '<strong class="legend-title">Bruttoleistung</strong>'; //dynamic for the different adjustments
-    div.innerHTML +=quantil? '<strong class="legend-subtitle">Bruttoleistung pro Fläche</strong>':'<strong class="legend-subtitle"></strong>';
+    div.innerHTML += quantil ? '<strong class="legend-subtitle">Bruttoleistung pro Fläche</strong>' : '<strong class="legend-subtitle"></strong>';
 
     abstufungen.forEach((grade, i) => {
-        if(perArea){
+        if (perArea) {
             div.innerHTML += `
             <div class="legend-item">
                 <i class="legend-icon" style="background:${colors[i]}"></i>
                 <span class="legend-text">
-                    ${formatNumberWithDots(grade)} ${abstufungen[i + 1] ? ` &ndash; ${formatNumberWithDots(abstufungen[i + 1])} W/qm` : '+ W/qm'}
+                    ${formatNumberWithDots(grade / 1000)} ${abstufungen[i + 1] ? ` &ndash; ${formatNumberWithDots(abstufungen[i + 1] / 1000)} W/qm` : '+ W/qm'}
                 </span>
             </div>
         `;
-        }else{
+        } else {
             div.innerHTML += `
             <div class="legend-item">
                 <i class="legend-icon" style="background:${colors[i]}"></i>
                 <span class="legend-text">
-                    ${formatNumberWithDots(grade)} ${abstufungen[i + 1] ? ` &ndash; ${formatNumberWithDots(abstufungen[i + 1])} kW` : '+ kW'}
+                    ${formatNumberWithDots(grade / 1000)} ${abstufungen[i + 1] ? ` &ndash; ${formatNumberWithDots(abstufungen[i + 1] / 1000)} kW` : '+ kW'}
                 </span>
             </div>
         `;
@@ -237,11 +240,11 @@ function createLegend() {
 
     div.innerHTML += `
         <div class="legend-controls">
-            <button class="control-button" id="legend-area">Area</button>
-            <button class="control-button" id="legend-quantil">Quantil</button>
-            <button class="control-button" id="legend-plus">+</button>
-            <button class="control-button" id="legend-minus">-</button>
-            <button class="control-button" id="legend-barrier"><img src="${barrierButtonImgSrc}" alt="Button Icon" class="button-image"/></button>
+            <button class="control-button" id="legend-area"><span class="material-symbols-outlined">${areaIcon}</span></button>
+            <button class="control-button" id="legend-quantil"><span class="material-symbols-outlined">${quantilIcon}</span></button>
+            <button class="control-button" id="legend-plus"><span class="material-symbols-outlined">add</span></button>
+            <button class="control-button" id="legend-minus"><span class="material-symbols-outlined">remove</span></button>
+            <button class="control-button" id="legend-barrier"><span class="material-symbols-outlined">${eyeIcon}</span></button>
         </div>
     `;
     addLegendControls(div);
@@ -286,13 +289,15 @@ function addLegendControls(legendDiv) {
 
     barrierButton.addEventListener('click', () => {
         barrierFree = !barrierFree;
-        barrierButtonImgSrc = barrierFree ? 'img/colorblind_on.png' : 'img/colorblind_off.png';
+        eyeIcon = (eyeIcon === 'visibility') ? 'visibility_off' : 'visibility';
         updateAbstufungenAndColors();
         updateMap();
         updateLegend();
     });
 
     areaButton.addEventListener('click', () => {
+        areaIcon = (areaIcon === 'bolt') ? 'pageless' : 'bolt';
+
         perArea = !perArea;
         updateAbstufungenAndColors();
         updateMap();
@@ -300,6 +305,7 @@ function addLegendControls(legendDiv) {
     });
 
     quantilButton.addEventListener('click', () => {
+        quantilIcon = (quantilIcon === 'sort') ? 'menu' : 'sort';
         quantil = !quantil;
         updateAbstufungenAndColors();
         updateMap();
@@ -312,10 +318,10 @@ function updateLegend() {
     if (legend) {
         legend.innerHTML = '';
         legend.innerHTML = perArea ? '<strong class="legend-title">Bruttoleistung pro Fläche</strong>' : '<strong class="legend-title">Bruttoleistung</strong>'; //dynamic for the different adjustments
-        legend.innerHTML +=quantil? '<weak class="legend-subtitle">Abstufung entspricht '+(Math.round((100/anzAbstufungen)*100)/100)+' % der Werte.</weak>':'<strong class="legend-subtitle"></strong>';
+        legend.innerHTML += quantil ? '<weak class="legend-subtitle">Abstufung entspricht ' + (Math.round((100 / anzAbstufungen) * 100) / 100) + ' % der Werte.</weak>' : '<strong class="legend-subtitle"></strong>';
 
         abstufungen.forEach((grade, i) => {
-            if(perArea){
+            if (perArea) {
                 legend.innerHTML += `
                 <div class="legend-item">
                     <i class="legend-icon" style="background:${colors[i]}"></i>
@@ -324,7 +330,7 @@ function updateLegend() {
                     </span>
                 </div>
             `;
-            }else{
+            } else {
                 legend.innerHTML += `
                 <div class="legend-item">
                     <i class="legend-icon" style="background:${colors[i]}"></i>
@@ -337,13 +343,13 @@ function updateLegend() {
         });
 
         legend.innerHTML += `
-            <div class="legend-controls">
-            <button class="control-button" id="legend-area">Area</button>
-            <button class="control-button" id="legend-quantil">Quantil</button>
-                <button class="control-button" id="legend-plus">+</button>
-                <button class="control-button" id="legend-minus">-</button>
-                <button class="control-button" id="legend-barrier"><img src="${barrierButtonImgSrc}" alt="Button Icon" class="button-image"/></button>
-            </div>
+           <div class="legend-controls">
+            <button class="control-button" id="legend-area"><span class="material-symbols-outlined">${areaIcon}</span></button>
+            <button class="control-button" id="legend-quantil"><span class="material-symbols-outlined">${quantilIcon}</span></button>
+            <button class="control-button" id="legend-plus"><span class="material-symbols-outlined">add</span></button>
+            <button class="control-button" id="legend-minus"><span class="material-symbols-outlined">remove</span></button>
+            <button class="control-button" id="legend-barrier"><span class="material-symbols-outlined">${eyeIcon}</span></button>
+        </div>
         `;
 
         addLegendControls(legend);
