@@ -9,7 +9,11 @@ let barrierButtonImgSrc = 'img/colorblind_off.png';
 let burgerMenu = false;
 let burgerMenuButtonImg = 'img/burger_menu.png';
 const message = document.querySelector('.message');
-
+let perArea = false;
+let quantil = false;
+let areaIcon = 'bolt';
+let quantilIcon = 'menu';
+let eyeIcon = 'visibility_off';
 
 document.addEventListener("DOMContentLoaded", () => {
     const overlay = createOverlay();
@@ -25,7 +29,6 @@ document.addEventListener("DOMContentLoaded", () => {
             updateMap();
             updateLegend();
             showMessage('Die Daten wurden neu geladen!');
-            //createBurgerMenu();
         } catch (error) {
             showMessage("Fehler beim Neuladen der Daten:", error);
         }
@@ -136,7 +139,7 @@ function createBurgerMenu() {
             const feature = orte.features.find(item => item.properties?.name === datax.PLZ);
             if (feature?.properties?.plz_name) {
                 const listItem = document.createElement("li");
-                listItem.innerHTML = `<div class="liOver">${datax.PLZ} ${feature.properties.plz_name}</div><div class="liUnder">${formatNumberWithDots(datax.PV)} W</div>`;
+                listItem.innerHTML = `<div class="liOver">${datax.PLZ} ${feature.properties.plz_name}</div><div class="liUnder"><span class="material-symbols-outlined icon_in_search">bolt</span>${formatNumberWithDots(datax.PV)} kW &nbsp;&nbsp; <span class="material-symbols-outlined icon_in_search">pageless</span> ${getPVPerSqmPerPLZ(datax.PLZ).toFixed(0) / 1000} W/qm</div>`;
                 listItem.addEventListener("click", () => {
                     highlightPLZ(datax.PLZ);
                 });
@@ -175,9 +178,10 @@ function highlightPLZ(plz) {
 }
 
 function updateAbstufungenAndColors() {
-    abstufungen = getAbstufung(anzAbstufungen);
+    abstufungen = quantil ? getAbstufungenQuantile(anzAbstufungen, perArea) : getAbstufungen(anzAbstufungen, perArea);
     colors = generateColorGradient(anzAbstufungen);
 }
+
 
 function updateMap() {
     map.removeLayer(geoJsonLayer);
@@ -196,7 +200,6 @@ function createOverlay() {
 
     const button = document.createElement("button");
     button.classList.add("reload-button");
-    // button.textContent = "Daten neu laden";
     button.textContent = "↻";
     button.title = "Daten erneut laden"
 
@@ -206,24 +209,38 @@ function createOverlay() {
 
 function createLegend() {
     const div = L.DomUtil.create('div', 'legend');
-    div.innerHTML = '<strong class="legend-title">Bruttoleistung in Watt</strong>';
+    div.innerHTML = perArea ? '<strong class="legend-title">Bruttoleistung pro Fläche</strong>' : '<strong class="legend-title">Bruttoleistung</strong>'; //dynamic for the different adjustments
+    div.innerHTML += quantil ? '<strong class="legend-subtitle">Bruttoleistung pro Fläche</strong>' : '<strong class="legend-subtitle"></strong>';
 
     abstufungen.forEach((grade, i) => {
-        div.innerHTML += `
+        if (perArea) {
+            div.innerHTML += `
             <div class="legend-item">
                 <i class="legend-icon" style="background:${colors[i]}"></i>
                 <span class="legend-text">
-                    ${formatNumberWithDots(grade)} ${abstufungen[i + 1] ? ` &ndash; ${formatNumberWithDots(abstufungen[i + 1])}` : '+'}
+                    ${formatNumberWithDots(grade / 1000)} ${abstufungen[i + 1] ? ` &ndash; ${formatNumberWithDots(abstufungen[i + 1] / 1000)} W/qm` : '+ W/qm'}
                 </span>
             </div>
         `;
+        } else {
+            div.innerHTML += `
+            <div class="legend-item">
+                <i class="legend-icon" style="background:${colors[i]}"></i>
+                <span class="legend-text">
+                    ${formatNumberWithDots(grade / 1000)} ${abstufungen[i + 1] ? ` &ndash; ${formatNumberWithDots(abstufungen[i + 1] / 1000)} kW` : '+ kW'}
+                </span>
+            </div>
+        `;
+        }
     });
 
     div.innerHTML += `
         <div class="legend-controls">
-            <button class="control-button" id="legend-plus">+</button>
-            <button class="control-button" id="legend-minus">-</button>
-            <button class="control-button" id="legend-barrier"><img src="${barrierButtonImgSrc}" alt="Button Icon" class="button-image"/></button>
+            <button class="control-button" id="legend-area"><span class="material-symbols-outlined">${areaIcon}</span></button>
+            <button class="control-button" id="legend-quantil"><span class="material-symbols-outlined">${quantilIcon}</span></button>
+            <button class="control-button" id="legend-plus"><span class="material-symbols-outlined">add</span></button>
+            <button class="control-button" id="legend-minus"><span class="material-symbols-outlined">remove</span></button>
+            <button class="control-button" id="legend-barrier"><span class="material-symbols-outlined">${eyeIcon}</span></button>
         </div>
     `;
     addLegendControls(div);
@@ -234,9 +251,13 @@ function addLegendControls(legendDiv) {
     const plusButton = legendDiv.querySelector('#legend-plus');
     const minusButton = legendDiv.querySelector('#legend-minus');
     const barrierButton = legendDiv.querySelector('#legend-barrier');
+    const areaButton = legendDiv.querySelector('#legend-area');
+    const quantilButton = legendDiv.querySelector('#legend-quantil');
     plusButton.title = "Abstufungen erhöhen";
     minusButton.title = "Abstufungen verringern";
     barrierButton.title = "Barrierefreier Modus";
+    areaButton.title = "Toggle per Area";
+    quantilButton.title = "Toggle Quantilskala"
 
     plusButton.addEventListener('click', () => {
         if (anzAbstufungen < 15) {
@@ -264,7 +285,24 @@ function addLegendControls(legendDiv) {
 
     barrierButton.addEventListener('click', () => {
         barrierFree = !barrierFree;
-        barrierButtonImgSrc = barrierFree ? 'img/colorblind_on.png' : 'img/colorblind_off.png';
+        eyeIcon = (eyeIcon === 'visibility') ? 'visibility_off' : 'visibility';
+        updateAbstufungenAndColors();
+        updateMap();
+        updateLegend();
+    });
+
+    areaButton.addEventListener('click', () => {
+        areaIcon = (areaIcon === 'bolt') ? 'pageless' : 'bolt';
+
+        perArea = !perArea;
+        updateAbstufungenAndColors();
+        updateMap();
+        updateLegend();
+    });
+
+    quantilButton.addEventListener('click', () => {
+        quantilIcon = (quantilIcon === 'sort') ? 'menu' : 'sort';
+        quantil = !quantil;
         updateAbstufungenAndColors();
         updateMap();
         updateLegend();
@@ -275,25 +313,39 @@ function updateLegend() {
     const legend = document.querySelector('.legend');
     if (legend) {
         legend.innerHTML = '';
-        legend.innerHTML = '<strong class="legend-title">Bruttoleistung in Watt</strong>';
+        legend.innerHTML = perArea ? '<strong class="legend-title">Bruttoleistung pro Fläche</strong>' : '<strong class="legend-title">Bruttoleistung</strong>'; //dynamic for the different adjustments
+        legend.innerHTML += quantil ? '<weak class="legend-subtitle">Abstufung entspricht ' + (Math.round((100 / anzAbstufungen) * 100) / 100) + ' % der Werte.</weak>' : '<strong class="legend-subtitle"></strong>';
 
         abstufungen.forEach((grade, i) => {
-            legend.innerHTML += `
+            if (perArea) {
+                legend.innerHTML += `
                 <div class="legend-item">
                     <i class="legend-icon" style="background:${colors[i]}"></i>
                     <span class="legend-text">
-                        ${formatNumberWithDots(grade)} ${abstufungen[i + 1] ? ` &ndash; ${formatNumberWithDots(abstufungen[i + 1])}` : '+'}
+                        ${formatNumberWithDots(grade / 1000)} ${abstufungen[i + 1] ? ` &ndash; ${formatNumberWithDots(abstufungen[i + 1] / 1000)} W/qm` : '+ W/qm'}
                     </span>
                 </div>
             `;
+            } else {
+                legend.innerHTML += `
+                <div class="legend-item">
+                    <i class="legend-icon" style="background:${colors[i]}"></i>
+                    <span class="legend-text">
+                        ${formatNumberWithDots(grade / 1000)} ${abstufungen[i + 1] ? ` &ndash; ${formatNumberWithDots(abstufungen[i + 1] / 1000)} kW` : '+ kW'}
+                    </span>
+                </div>
+            `;
+            }
         });
 
         legend.innerHTML += `
-            <div class="legend-controls">
-                <button class="control-button" id="legend-plus">+</button>
-                <button class="control-button" id="legend-minus">-</button>
-                <button class="control-button" id="legend-barrier"><img src="${barrierButtonImgSrc}" alt="Button Icon" class="button-image"/></button>
-            </div>
+           <div class="legend-controls">
+            <button class="control-button" id="legend-area"><span class="material-symbols-outlined">${areaIcon}</span></button>
+            <button class="control-button" id="legend-quantil"><span class="material-symbols-outlined">${quantilIcon}</span></button>
+            <button class="control-button" id="legend-plus"><span class="material-symbols-outlined">add</span></button>
+            <button class="control-button" id="legend-minus"><span class="material-symbols-outlined">remove</span></button>
+            <button class="control-button" id="legend-barrier"><span class="material-symbols-outlined">${eyeIcon}</span></button>
+        </div>
         `;
 
         addLegendControls(legend);
@@ -313,7 +365,7 @@ function getColor(pv) {
 
 function style(feature) {
     return {
-        fillColor: getColor(parseInt(getPvPerPLZ(feature.properties.plz_code))),
+        fillColor: getColor(perArea ? getPVPerSqmPerPLZ(feature.properties.plz_code) : getPvPerPLZ(feature.properties.plz_code)),
         weight: 1,
         opacity: 1,
         color: 'white',
@@ -335,11 +387,12 @@ function generateColorGradient(steps) {
 }
 
 function onEachFeature(feature, layer) {
-    const pPerPLZ = getPvPerPLZ(feature.properties.plz_code);
-    const formatted = formatNumberWithDots(pPerPLZ);
+    const PLZpF=formatNumberWithDots(getPVPerSqmPerPLZ(feature.properties.plz_code).toFixed(0) / 1000);
+    const PV = formatNumberWithDots(getPvPerPLZ(feature.properties.plz_code));
     layer.bindPopup(`
-        <div class="popup-title">${feature.properties.plz_code} ${feature.properties.plz_name}</div>
-        <div class="popup-subtitle">Bruttoleistung: ${formatted} Watt</div>
+       <div class="popup-title">${feature.properties.plz_code} ${feature.properties.plz_name}</div>
+       <div class="popup-subtitle">Bruttoleistung: ${PV} kW</div>
+       <div class="popup-subtitle">Bruttoleistung pro Fläche: ${PLZpF} W/qm</div>
     `);
 }
 
@@ -348,22 +401,64 @@ function getPvPerPLZ(plz) {
     return datax ? datax.PV : 0;
 }
 
-function getAbstufung(anzAbstufungen) {
-    let max = 0;
-    for (let datax of data.PLZ_PV) {
-        if (datax.PV > max) {
-            max = datax.PV;
-        }
+function getPVPerSqmPerPLZ(plz) {
+    const datax = orte.features.filter(item => item.properties.name === plz);
+    let size = 0;
+
+    for (const dataxx of datax) {
+        size += dataxx.properties.area_sqm || 0; // Wenn area_sqm 0 oder undefined ist, bleibt size 0
     }
 
+    return size > 0 ? getPvPerPLZ(plz) * 1000000 / size : 0; // Verhindert Division durch 0
+}
+
+
+function getAbstufungenQuantile(anzAbstufungen, perArea) { //perArea flag to toggle between just bruttoleistung and per Area
+    const values = [];
+    for (let datax of data.PLZ_PV) {
+        if (perArea) {
+            values.push(getPVPerSqmPerPLZ(datax.PLZ));
+        } else {
+            values.push(datax.PV);
+        }
+    }
+    values.sort((a, b) => a - b);
+    const abstufungen = [];
+
+    var length = Math.trunc(values.length / anzAbstufungen);
+    abstufungen.push(0.0);
+    for (let i = 1; i < anzAbstufungen; i++) {
+        var pos = i * length;
+        abstufungen.push(Math.trunc(values[pos]));//Grenze zwischen zwei wirkliche Values
+    }
+
+    return abstufungen;
+}
+
+function getAbstufungen(anzAbstufungen, perArea) { //perArea flag to toggle between just bruttoleistung and per Area
+    var max = 0;
+    counter = 0;
+    for (let datax of data.PLZ_PV) {
+        counter += Number(datax.PV);
+        if (perArea == true) {
+            if (getPVPerSqmPerPLZ(datax.PLZ) > max) {
+                max = getPVPerSqmPerPLZ(datax.PLZ);
+            }
+        } else {
+            if (max - datax.PV < 0) {
+                max = datax.PV;
+            }
+        }
+    }
     const abstufungen = [];
     for (let i = 0; i < anzAbstufungen; i++) {
         let abstufung = Math.round((max / anzAbstufungen) * i);
-        abstufung = Math.ceil(abstufung / 10000) * 10000;
+        if (!perArea) abstufung = Math.ceil(abstufung / 10000) * 10000;
         abstufungen.push(abstufung);
     }
 
     return abstufungen;
+
 }
 
 function showMessage(messageText, error = '') {

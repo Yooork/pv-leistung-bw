@@ -20,9 +20,16 @@ body {
 
 .legend-title {
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 0px;
     font-weight: bold;
     font-size: 12px;
+}
+
+.legend-subtitle {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: lighter;
+    font-size: 10px;
 }
 
 .legend-item {
@@ -297,4 +304,8 @@ body {
 
 .liUnder {
     font-size: 12px;
+}
+
+.icon_in_search {
+    font-size: 12px !important;
 }
