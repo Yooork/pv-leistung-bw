@@ -11,6 +11,7 @@ let burgerMenuButtonImg = 'img/burger_menu.png';
 const message = document.querySelector('.message');
 let perArea = false;
 let quantil = false;
+let areaIcon = 'bolt';
 
 document.addEventListener("DOMContentLoaded", () => {
     const overlay = createOverlay();
@@ -212,7 +213,6 @@ function createLegend() {
     const div = L.DomUtil.create('div', 'legend');
     div.innerHTML = perArea ? '<strong class="legend-title">Bruttoleistung pro Fläche<br>in Watt/qm</strong>' : '<strong class="legend-title">Bruttoleistung in Kilo Watt</strong>'; //dynamic for the different adjustments
 
-
     abstufungen.forEach((grade, i) => {
         div.innerHTML += `
             <div class="legend-item">
@@ -226,7 +226,7 @@ function createLegend() {
 
     div.innerHTML += `
         <div class="legend-controls">
-            <button class="control-button" id="legend-area">Area</button>
+            <button class="control-button" id="legend-area"><span class="material-symbols-outlined">${areaIcon}</span></button>
             <button class="control-button" id="legend-quantil">Quantil</button>
             <button class="control-button" id="legend-plus">+</button>
             <button class="control-button" id="legend-minus">-</button>
@@ -282,6 +282,8 @@ function addLegendControls(legendDiv) {
     });
 
     areaButton.addEventListener('click', () => {
+        areaIcon = (areaIcon === 'bolt') ? 'pageless' : 'bolt';
+
         perArea = !perArea;
         updateAbstufungenAndColors();
         updateMap();
@@ -315,7 +317,7 @@ function updateLegend() {
 
         legend.innerHTML += `
             <div class="legend-controls">
-            <button class="control-button" id="legend-area">Area</button>
+            <button class="control-button" id="legend-area"><span class="material-symbols-outlined">${areaIcon}</span></button>
             <button class="control-button" id="legend-quantil">Quantil</button>
                 <button class="control-button" id="legend-plus">+</button>
                 <button class="control-button" id="legend-minus">-</button>
