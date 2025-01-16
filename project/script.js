@@ -10,7 +10,7 @@ let burgerMenu = false;
 let burgerMenuButtonImg = 'img/burger_menu.png';
 const message = document.querySelector('.message');
 let perArea = false;
-let quantil =false;
+let quantil = false;
 
 document.addEventListener("DOMContentLoaded", () => {
     const overlay = createOverlay();
@@ -176,7 +176,7 @@ function highlightPLZ(plz) {
 }
 
 function updateAbstufungenAndColors() {
-    abstufungen = quantil?getAbstufungenQuantile(anzAbstufungen,perArea):getAbstufungen(anzAbstufungen,perArea);
+    abstufungen = quantil ? getAbstufungenQuantile(anzAbstufungen, perArea) : getAbstufungen(anzAbstufungen, perArea);
     console.log("Abstufungen:", abstufungen); // Debugging
     colors = generateColorGradient(anzAbstufungen);
     console.log("Colors:", colors); // Debugging
@@ -210,8 +210,8 @@ function createOverlay() {
 
 function createLegend() {
     const div = L.DomUtil.create('div', 'legend');
-    div.innerHTML = perArea?'<strong class="legend-title">Bruttoleistung pro Fläche<br>in Watt/qm</strong>':'<strong class="legend-title">Bruttoleistung in Watt</strong>'; //dynamic for the different adjustments
-    
+    div.innerHTML = perArea ? '<strong class="legend-title">Bruttoleistung pro Fläche<br>in Watt/qm</strong>' : '<strong class="legend-title">Bruttoleistung in Kilo Watt</strong>'; //dynamic for the different adjustments
+
 
     abstufungen.forEach((grade, i) => {
         div.innerHTML += `
@@ -281,15 +281,15 @@ function addLegendControls(legendDiv) {
         updateLegend();
     });
 
-    areaButton.addEventListener('click',()=>{
-        perArea=!perArea;
+    areaButton.addEventListener('click', () => {
+        perArea = !perArea;
         updateAbstufungenAndColors();
         updateMap();
         updateLegend();
     });
 
-    quantilButton.addEventListener('click',()=>{
-        quantil=!quantil;
+    quantilButton.addEventListener('click', () => {
+        quantil = !quantil;
         updateAbstufungenAndColors();
         updateMap();
         updateLegend();
@@ -300,14 +300,14 @@ function updateLegend() {
     const legend = document.querySelector('.legend');
     if (legend) {
         legend.innerHTML = '';
-        legend.innerHTML = perArea?'<strong class="legend-title">Bruttoleistung pro Fläche<br> in Watt/qm</strong>':'<strong class="legend-title">Bruttoleistung in Watt</strong>'; //dynamic for the different adjustments
-    
+        legend.innerHTML = perArea ? '<strong class="legend-title">Bruttoleistung pro Fläche in Watt/qm</strong>' : '<strong class="legend-title">Bruttoleistung in Kilo Watt</strong>'; //dynamic for the different adjustments
+
         abstufungen.forEach((grade, i) => {
             legend.innerHTML += `
                 <div class="legend-item">
                     <i class="legend-icon" style="background:${colors[i]}"></i>
                     <span class="legend-text">
-                        ${formatNumberWithDots(grade)} ${abstufungen[i + 1] ? ` &ndash; ${formatNumberWithDots(abstufungen[i + 1])}` : '+'}
+                        ${formatNumberWithDots(grade / 1000)} ${abstufungen[i + 1] ? ` &ndash; ${formatNumberWithDots(abstufungen[i + 1] / 1000)}` : '+'}
                     </span>
                 </div>
             `;
@@ -340,7 +340,7 @@ function getColor(pv) {
 
 function style(feature) {
     return {
-        fillColor: getColor(perArea?getPVPerSqmPerPLZ(feature.properties.plz_code):getPvPerPLZ(feature.properties.plz_code)),
+        fillColor: getColor(perArea ? getPVPerSqmPerPLZ(feature.properties.plz_code) : getPvPerPLZ(feature.properties.plz_code)),
         weight: 1,
         opacity: 1,
         color: 'white',
@@ -362,17 +362,17 @@ function generateColorGradient(steps) {
 }
 
 function onEachFeature(feature, layer) {
-    const value = perArea?getPVPerSqmPerPLZ(feature.properties.plz_code):getPvPerPLZ(feature.properties.plz_code);
+    const value = perArea ? getPVPerSqmPerPLZ(feature.properties.plz_code).toFixed(0) / 1000 : getPvPerPLZ(feature.properties.plz_code);
     const formatted = formatNumberWithDots(value);
-    if(perArea){
+    if (perArea) {
         layer.bindPopup(`
             <div class="popup-title">${feature.properties.plz_code} ${feature.properties.plz_name}</div>
             <div class="popup-subtitle">Bruttoleistung pro Fläche: ${formatted} Watt</div>
         `);
-    }else{
-    layer.bindPopup(`
+    } else {
+        layer.bindPopup(`
         <div class="popup-title">${feature.properties.plz_code} ${feature.properties.plz_name}</div>
-        <div class="popup-subtitle">Bruttoleistung: ${formatted} Watt</div>
+        <div class="popup-subtitle">Bruttoleistung: ${formatted} Kilo Watt</div>
     `);
     }
 }
@@ -390,43 +390,43 @@ function getPVPerSqmPerPLZ(plz) {
         size += dataxx.properties.area_sqm || 0; // Wenn area_sqm 0 oder undefined ist, bleibt size 0
     }
 
-    return size > 0 ? getPvPerPLZ(plz) / size : 0; // Verhindert Division durch 0
+    return size > 0 ? getPvPerPLZ(plz) * 1000000 / size : 0; // Verhindert Division durch 0
 }
 
 
-function getAbstufungenQuantile(anzAbstufungen, perArea){ //perArea flag to toggle between just bruttoleistung and per Area
+function getAbstufungenQuantile(anzAbstufungen, perArea) { //perArea flag to toggle between just bruttoleistung and per Area
     const values = [];
-    for(let datax of data.PLZ_PV){
-        if(perArea){
+    for (let datax of data.PLZ_PV) {
+        if (perArea) {
             values.push(getPVPerSqmPerPLZ(datax.PLZ));
-        }else{
+        } else {
             values.push(datax.PV);
         }
     }
-    values.sort((a,b)=>a-b);
-    const abstufungen=[];
+    values.sort((a, b) => a - b);
+    const abstufungen = [];
 
-    var length = Math.trunc(values.length,anzAbstufungen);
-    for(let i = 0;i<anzAbstufungen-1;i++){
-        var pos = i*length;
-        abstufungen.push((values[pos]-values[pos-1])/2);//Grenze zwischen zwei wirkliche Values
+    var length = Math.trunc(values.length, anzAbstufungen);
+    for (let i = 0; i < anzAbstufungen - 1; i++) {
+        var pos = i * length;
+        abstufungen.push((values[pos] - values[pos - 1]) / 2);//Grenze zwischen zwei wirkliche Values
     }
 
     return abstufungen;
 }
 
-function getAbstufungen(anzAbstufungen, perArea){ //perArea flag to toggle between just bruttoleistung and per Area
+function getAbstufungen(anzAbstufungen, perArea) { //perArea flag to toggle between just bruttoleistung and per Area
     var max = 0;
     counter = 0;
     for (let datax of data.PLZ_PV) {
-        counter+=Number(datax.PV);
-        if(perArea==true){
+        counter += Number(datax.PV);
+        if (perArea == true) {
             if (getPVPerSqmPerPLZ(datax.PLZ) > max) {
                 max = getPVPerSqmPerPLZ(datax.PLZ);
                 console.log(max, datax.PLZ, 'xx')
             }
-        }else{
-            if (max-datax.PV <0) {
+        } else {
+            if (max - datax.PV < 0) {
                 max = datax.PV;
             }
         }
@@ -435,7 +435,7 @@ function getAbstufungen(anzAbstufungen, perArea){ //perArea flag to toggle betwe
     const abstufungen = [];
     for (let i = 0; i < anzAbstufungen; i++) {
         let abstufung = Math.round((max / anzAbstufungen) * i);
-        if(!perArea)abstufung = Math.ceil(abstufung / 10000) * 10000;
+        if (!perArea) abstufung = Math.ceil(abstufung / 10000) * 10000;
         abstufungen.push(abstufung);
     }
 
