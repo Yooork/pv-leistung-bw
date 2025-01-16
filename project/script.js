@@ -391,19 +391,13 @@ function generateColorGradient(steps) {
 }
 
 function onEachFeature(feature, layer) {
-    const value = perArea ? getPVPerSqmPerPLZ(feature.properties.plz_code).toFixed(0) / 1000 : getPvPerPLZ(feature.properties.plz_code);
-    const formatted = formatNumberWithDots(value);
-    if (perArea) {
-        layer.bindPopup(`
-            <div class="popup-title">${feature.properties.plz_code} ${feature.properties.plz_name}</div>
-            <div class="popup-subtitle">Bruttoleistung pro Fläche: ${formatted} Watt</div>
-        `);
-    } else {
-        layer.bindPopup(`
-        <div class="popup-title">${feature.properties.plz_code} ${feature.properties.plz_name}</div>
-        <div class="popup-subtitle">Bruttoleistung: ${formatted} Kilo Watt</div>
+    const PLZpF=formatNumberWithDots(getPVPerSqmPerPLZ(feature.properties.plz_code).toFixed(0) / 1000);
+    const PV = formatNumberWithDots(getPvPerPLZ(feature.properties.plz_code));
+    layer.bindPopup(`
+       <div class="popup-title">${feature.properties.plz_code} ${feature.properties.plz_name}</div>
+       <div class="popup-subtitle">Bruttoleistung: ${PV} kW</div>
+       <div class="popup-subtitle">Bruttoleistung pro Fläche: ${PLZpF} W/qm</div>
     `);
-    }
 }
 
 function getPvPerPLZ(plz) {
