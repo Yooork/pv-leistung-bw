@@ -29,7 +29,6 @@ document.addEventListener("DOMContentLoaded", () => {
             updateMap();
             updateLegend();
             showMessage('Die Daten wurden neu geladen!');
-            //createBurgerMenu();
         } catch (error) {
             showMessage("Fehler beim Neuladen der Daten:", error);
         }
@@ -140,7 +139,7 @@ function createBurgerMenu() {
             const feature = orte.features.find(item => item.properties?.name === datax.PLZ);
             if (feature?.properties?.plz_name) {
                 const listItem = document.createElement("li");
-                listItem.innerHTML = `<div class="liOver">${datax.PLZ} ${feature.properties.plz_name}</div><div class="liUnder">${formatNumberWithDots(datax.PV)} W</div>`;
+                listItem.innerHTML = `<div class="liOver">${datax.PLZ} ${feature.properties.plz_name}</div><div class="liUnder"><span class="material-symbols-outlined icon_in_search">bolt</span>${formatNumberWithDots(datax.PV)} kW &nbsp;&nbsp; <span class="material-symbols-outlined icon_in_search">pageless</span> ${getPVPerSqmPerPLZ(datax.PLZ).toFixed(0) / 1000} W/qm</div>`;
                 listItem.addEventListener("click", () => {
                     highlightPLZ(datax.PLZ);
                 });
@@ -180,9 +179,7 @@ function highlightPLZ(plz) {
 
 function updateAbstufungenAndColors() {
     abstufungen = quantil ? getAbstufungenQuantile(anzAbstufungen, perArea) : getAbstufungen(anzAbstufungen, perArea);
-    console.log("Abstufungen:", abstufungen); // Debugging
     colors = generateColorGradient(anzAbstufungen);
-    console.log("Colors:", colors); // Debugging
 }
 
 
@@ -203,7 +200,6 @@ function createOverlay() {
 
     const button = document.createElement("button");
     button.classList.add("reload-button");
-    // button.textContent = "Daten neu laden";
     button.textContent = "↻";
     button.title = "Daten erneut laden"
 
@@ -453,7 +449,6 @@ function getAbstufungen(anzAbstufungen, perArea) { //perArea flag to toggle betw
         if (perArea == true) {
             if (getPVPerSqmPerPLZ(datax.PLZ) > max) {
                 max = getPVPerSqmPerPLZ(datax.PLZ);
-                console.log(max, datax.PLZ, 'xx')
             }
         } else {
             if (max - datax.PV < 0) {
@@ -461,7 +456,6 @@ function getAbstufungen(anzAbstufungen, perArea) { //perArea flag to toggle betw
             }
         }
     }
-    console.log(counter);
     const abstufungen = [];
     for (let i = 0; i < anzAbstufungen; i++) {
         let abstufung = Math.round((max / anzAbstufungen) * i);

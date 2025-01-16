@@ -305,3 +305,7 @@ body {
 .liUnder {
     font-size: 12px;
 }
+
+.icon_in_search {
+    font-size: 12px !important;
+}
