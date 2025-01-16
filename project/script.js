@@ -175,9 +175,12 @@ function highlightPLZ(plz) {
 }
 
 function updateAbstufungenAndColors() {
-    abstufungen = getAbstufung(anzAbstufungen);
+    abstufungen = getAbstufung2(anzAbstufungen);
+    console.log("Abstufungen:", abstufungen); // Debugging
     colors = generateColorGradient(anzAbstufungen);
+    console.log("Colors:", colors); // Debugging
 }
+
 
 function updateMap() {
     map.removeLayer(geoJsonLayer);
@@ -313,7 +316,7 @@ function getColor(pv) {
 
 function style(feature) {
     return {
-        fillColor: getColor(parseInt(getPvPerPLZ(feature.properties.plz_code))),
+        fillColor: getColor(getPVPerSqmPerPLZ(feature.properties.plz_code)),
         weight: 1,
         opacity: 1,
         color: 'white',
@@ -346,6 +349,42 @@ function onEachFeature(feature, layer) {
 function getPvPerPLZ(plz) {
     const datax = data.PLZ_PV.find(item => item.PLZ == plz);
     return datax ? datax.PV : 0;
+}
+
+function getPVPerSqmPerPLZ(plz) {
+    const datax = orte.features.filter(item => item.properties.name === plz);
+    let size = 0;
+
+    for (const dataxx of datax) {
+        size += dataxx.properties.area_sqm || 0; // Wenn area_sqm 0 oder undefined ist, bleibt size 0
+    }
+
+    return size > 0 ? getPvPerPLZ(plz) / size : 0; // Verhindert Division durch 0
+}
+
+
+function getAbstufung2(anzAbstufungen) {
+    let max = 0;
+
+    //for (let datax of orte.features.properties) {
+    for (let datax of data.PLZ_PV) {
+        console.log(getPVPerSqmPerPLZ(datax.PLZ));
+
+
+        if (getPVPerSqmPerPLZ(datax.PLZ) > max) {
+            max = getPVPerSqmPerPLZ(datax.PLZ);
+            console.log(max, datax.PLZ, 'xx')
+        }
+    }
+
+    const abstufungen = [];
+    for (let i = 0; i < anzAbstufungen; i++) {
+        let abstufung = (max / anzAbstufungen) * i;
+        //abstufung = Math.ceil(abstufung / 10000) * 10000;
+        abstufungen.push(abstufung);
+    }
+
+    return abstufungen;
 }
 
 function getAbstufung(anzAbstufungen) {
