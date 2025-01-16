@@ -406,10 +406,11 @@ function getAbstufungenQuantile(anzAbstufungen, perArea) { //perArea flag to tog
     values.sort((a, b) => a - b);
     const abstufungen = [];
 
-    var length = Math.trunc(values.length, anzAbstufungen);
-    for (let i = 0; i < anzAbstufungen - 1; i++) {
+    var length = Math.trunc(values.length / anzAbstufungen);
+    abstufungen.push(0.0);
+    for (let i = 1; i < anzAbstufungen; i++) {
         var pos = i * length;
-        abstufungen.push((values[pos] - values[pos - 1]) / 2);//Grenze zwischen zwei wirkliche Values
+        abstufungen.push(Math.trunc(values[pos]));//Grenze zwischen zwei wirkliche Values
     }
 
     return abstufungen;
