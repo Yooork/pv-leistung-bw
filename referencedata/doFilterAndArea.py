@@ -1,3 +1,21 @@
+import subprocess
+import sys
+
+def install(package):
+    """Installiert ein Python-Paket."""
+    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+
+# Installiere erforderliche Pakete
+required_packages = ["shapely", "pyproj"]
+
+for package in required_packages:
+    try:
+        __import__(package)
+    except ImportError:
+        print(f"Installiere fehlendes Paket: {package}")
+        install(package)
+
+
 import json
 from shapely.geometry import shape
 from pyproj import Transformer
