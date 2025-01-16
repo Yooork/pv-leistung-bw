@@ -363,35 +363,39 @@ function getPVPerSqmPerPLZ(plz) {
 }
 
 
-function getAbstufung2(anzAbstufungen) {
-    let max = 0;
-
-    //for (let datax of orte.features.properties) {
-    for (let datax of data.PLZ_PV) {
-        console.log(getPVPerSqmPerPLZ(datax.PLZ));
-
-
-        if (getPVPerSqmPerPLZ(datax.PLZ) > max) {
-            max = getPVPerSqmPerPLZ(datax.PLZ);
-            console.log(max, datax.PLZ, 'xx')
+function getAbstufungenQuantile(anzAbstufungen, perArea){ //perArea flag to toggle between just bruttoleistung and per Area
+    const values = [];
+    for(let datax of data.PLZ_PV){
+        if(perArea){
+            values.push(getPVPerSqmPerPLZ(datax.PLZ));
+        }else{
+            values.push(datax.PV);
         }
     }
+    values.sort((a,b)=>a-b);
+    const abstufungen=[];
 
-    const abstufungen = [];
-    for (let i = 0; i < anzAbstufungen; i++) {
-        let abstufung = (max / anzAbstufungen) * i;
-        //abstufung = Math.ceil(abstufung / 10000) * 10000;
-        abstufungen.push(abstufung);
+    var length = Math.trunc(values.length,anzAbstufungen);
+    for(let i = 0;i<anzAbstufungen-1;i++){
+        var pos = i*length;
+        abstufungen.push((values[pos]-values[pos-1])/2);//Grenze zwischen zwei wirkliche Values
     }
 
     return abstufungen;
 }
 
-function getAbstufung(anzAbstufungen) {
+function getAbstufungen(anzAbstufungen, perArea){ //perArea flag to toggle between just bruttoleistung and per Area
     let max = 0;
     for (let datax of data.PLZ_PV) {
-        if (datax.PV > max) {
-            max = datax.PV;
+        if(perArea==true){
+            if (getPVPerSqmPerPLZ(datax.PLZ) > max) {
+                max = getPVPerSqmPerPLZ(datax.PLZ);
+                console.log(max, datax.PLZ, 'xx')
+            }
+        }else{
+            if (datax.PV > max) {
+                max = datax.PV;
+            }
         }
     }
 
@@ -403,6 +407,7 @@ function getAbstufung(anzAbstufungen) {
     }
 
     return abstufungen;
+
 }
 
 function showMessage(messageText, error = '') {
