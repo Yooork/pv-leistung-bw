@@ -25,6 +25,13 @@ body {
     font-size: 12px;
 }
 
+.legend-subtitle{
+    display: block;
+    margin-bottom: 5px;
+    font-weight: lighter;
+    font-size: 10px;
+}
+
 .legend-item {
     display: flex;
     align-items: center;

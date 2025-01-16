@@ -210,18 +210,29 @@ function createOverlay() {
 
 function createLegend() {
     const div = L.DomUtil.create('div', 'legend');
-    div.innerHTML = perArea ? '<strong class="legend-title">Bruttoleistung pro Fläche<br>in Watt/qm</strong>' : '<strong class="legend-title">Bruttoleistung in Kilo Watt</strong>'; //dynamic for the different adjustments
-
+    div.innerHTML = perArea ? '<strong class="legend-title">Bruttoleistung pro Fläche</strong>' : '<strong class="legend-title">Bruttoleistung</strong>'; //dynamic for the different adjustments
+    div.innerHTML +=quantil? '<strong class="legend-subtitle">Bruttoleistung pro Fläche</strong>':'<strong class="legend-subtitle"></strong>';
 
     abstufungen.forEach((grade, i) => {
-        div.innerHTML += `
+        if(perArea){
+            div.innerHTML += `
             <div class="legend-item">
                 <i class="legend-icon" style="background:${colors[i]}"></i>
                 <span class="legend-text">
-                    ${formatNumberWithDots(grade)} ${abstufungen[i + 1] ? ` &ndash; ${formatNumberWithDots(abstufungen[i + 1])}` : '+'}
+                    ${formatNumberWithDots(grade)} ${abstufungen[i + 1] ? ` &ndash; ${formatNumberWithDots(abstufungen[i + 1])} W/qm` : '+ W/qm'}
                 </span>
             </div>
         `;
+        }else{
+            div.innerHTML += `
+            <div class="legend-item">
+                <i class="legend-icon" style="background:${colors[i]}"></i>
+                <span class="legend-text">
+                    ${formatNumberWithDots(grade)} ${abstufungen[i + 1] ? ` &ndash; ${formatNumberWithDots(abstufungen[i + 1])} kW` : '+ kW'}
+                </span>
+            </div>
+        `;
+        }
     });
 
     div.innerHTML += `
@@ -300,17 +311,29 @@ function updateLegend() {
     const legend = document.querySelector('.legend');
     if (legend) {
         legend.innerHTML = '';
-        legend.innerHTML = perArea ? '<strong class="legend-title">Bruttoleistung pro Fläche in Watt/qm</strong>' : '<strong class="legend-title">Bruttoleistung in Kilo Watt</strong>'; //dynamic for the different adjustments
+        legend.innerHTML = perArea ? '<strong class="legend-title">Bruttoleistung pro Fläche</strong>' : '<strong class="legend-title">Bruttoleistung</strong>'; //dynamic for the different adjustments
+        legend.innerHTML +=quantil? '<weak class="legend-subtitle">Abstufung entspricht '+(Math.round((100/anzAbstufungen)*100)/100)+' % der Werte.</weak>':'<strong class="legend-subtitle"></strong>';
 
         abstufungen.forEach((grade, i) => {
-            legend.innerHTML += `
+            if(perArea){
+                legend.innerHTML += `
                 <div class="legend-item">
                     <i class="legend-icon" style="background:${colors[i]}"></i>
                     <span class="legend-text">
-                        ${formatNumberWithDots(grade / 1000)} ${abstufungen[i + 1] ? ` &ndash; ${formatNumberWithDots(abstufungen[i + 1] / 1000)}` : '+'}
+                        ${formatNumberWithDots(grade / 1000)} ${abstufungen[i + 1] ? ` &ndash; ${formatNumberWithDots(abstufungen[i + 1] / 1000)} W/qm` : '+ W/qm'}
                     </span>
                 </div>
             `;
+            }else{
+                legend.innerHTML += `
+                <div class="legend-item">
+                    <i class="legend-icon" style="background:${colors[i]}"></i>
+                    <span class="legend-text">
+                        ${formatNumberWithDots(grade / 1000)} ${abstufungen[i + 1] ? ` &ndash; ${formatNumberWithDots(abstufungen[i + 1] / 1000)} kW` : '+ kW'}
+                    </span>
+                </div>
+            `;
+            }
         });
 
         legend.innerHTML += `
