@@ -227,7 +227,7 @@ function createLegend() {
             <div class="legend-item">
                 <i class="legend-icon" style="background:${colors[i]}"></i>
                 <span class="legend-text">
-                    ${formatNumberWithDots(grade / 1000)} ${abstufungen[i + 1] ? ` &ndash; ${formatNumberWithDots(abstufungen[i + 1] / 1000)} kW` : '+ kW'}
+                    ${formatNumberWithDots(grade)} ${abstufungen[i + 1] ? ` &ndash; ${formatNumberWithDots(abstufungen[i + 1])} kW` : '+ kW'}
                 </span>
             </div>
         `;
@@ -331,7 +331,7 @@ function updateLegend() {
                 <div class="legend-item">
                     <i class="legend-icon" style="background:${colors[i]}"></i>
                     <span class="legend-text">
-                        ${formatNumberWithDots(grade / 1000)} ${abstufungen[i + 1] ? ` &ndash; ${formatNumberWithDots(abstufungen[i + 1] / 1000)} kW` : '+ kW'}
+                        ${formatNumberWithDots(grade)} ${abstufungen[i + 1] ? ` &ndash; ${formatNumberWithDots(abstufungen[i + 1])} kW` : '+ kW'}
                     </span>
                 </div>
             `;
@@ -383,11 +383,11 @@ function generateColorGradient(steps) {
     return Array.from({ length: steps }, (_, i) => {
         const lightness = 10 + (80 * i) / (steps - 1);
         return `hsl(240, 100%, ${lightness}%)`;
-    });
+    }).reverse();;
 }
 
 function onEachFeature(feature, layer) {
-    const PLZpF=formatNumberWithDots(getPVPerSqmPerPLZ(feature.properties.plz_code).toFixed(0) / 1000);
+    const PLZpF = formatNumberWithDots(getPVPerSqmPerPLZ(feature.properties.plz_code).toFixed(0) / 1000);
     const PV = formatNumberWithDots(getPvPerPLZ(feature.properties.plz_code));
     layer.bindPopup(`
        <div class="popup-title">${feature.properties.plz_code} ${feature.properties.plz_name}</div>
