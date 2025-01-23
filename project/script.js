@@ -383,7 +383,7 @@ function generateColorGradient(steps) {
     return Array.from({ length: steps }, (_, i) => {
         const lightness = 10 + (80 * i) / (steps - 1);
         return `hsl(240, 100%, ${lightness}%)`;
-    });
+    }).reverse();;
 }
 
 function onEachFeature(feature, layer) {
