@@ -48,6 +48,10 @@ async function getData() {
     }
 }
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function loadDataAndMap() {
     data = await getData();
     if (data) {
