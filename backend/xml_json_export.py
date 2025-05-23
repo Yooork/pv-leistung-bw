@@ -27,66 +27,78 @@ def calculate_bruttoleistung_per_postleitzahl(directory):
     pattern_for_filename = re.compile(r"^EinheitenSolar_\d{1,2}\.xml$")
 
     file_count = sum(1 for file in os.listdir(directory) if pattern_for_filename.match(file))
-
     counter = 1
+
     for filename in os.listdir(directory):
-        if pattern_for_filename.match(filename):
-            progress = int(50 * counter / file_count)
-            percent = int(100 / file_count * counter)
-            bar = "#" * progress + "." * (50 - progress)
-            print(f"\r[{bar}] {percent}%", end="", flush=True)
+        if not pattern_for_filename.match(filename):
+            continue
 
-            file_path = os.path.join(directory, filename)
+        progress = int(50 * counter / file_count)
+        percent = int(100 / file_count * counter)
+        bar = "#" * progress + "." * (50 - progress)
+        print(f"\r[{bar}] {percent}%", end="", flush=True)
 
-            try:
-                tree = ET.parse(file_path)
-                root = tree.getroot()
-            except ET.ParseError:
-                print(f"\nFehler beim Parsen der Datei: {filename}")
+        file_path = os.path.join(directory, filename)
+
+        try:
+            tree = ET.parse(file_path)
+            root = tree.getroot()
+        except ET.ParseError:
+            print(f"\nFehler beim Parsen der Datei: {filename}")
+            counter += 1
+            continue
+
+        for einheit in root.findall('.//EinheitSolar'):
+            bundesland = einheit.find('Bundesland')
+            if bundesland is None or bundesland.text != '1402':
                 continue
 
-            for einheit in root.findall('.//EinheitSolar'):
-                bundesland = einheit.find('Bundesland')
-                if bundesland is not None and bundesland.text == '1402':
-                    plz = einheit.find('Postleitzahl')
-                    bruttoleistung = einheit.find('Bruttoleistung')
-                    id = einheit.find('EinheitMastrNummer')
+            plz = einheit.find('Postleitzahl')
+            bruttoleistung = einheit.find('Bruttoleistung')
+            id = einheit.find('EinheitMastrNummer')
 
-                    if plz is not None and bruttoleistung is not None:
-                        try:
-                            leistung = math.trunc(float(bruttoleistung.text))
-                            if leistung > 40000:
-                                user_input = input_with_timeout(
-                                    f"\nDie Bruttoleistung {leistung} kW, der Anlage {id.text} in {plz.text} aus {filename}, ist größer als 40.000 kW. Möchten Sie diese Leistung akzeptieren? (y/n): ",
-                                    10
-                                )
+            if plz is None or bruttoleistung is None:
+                continue
 
-                                if user_input == 'y':
-                                    bruttoleistung_per_plz[plz.text] += leistung
+            try:
+                leistung = math.trunc(float(bruttoleistung.text))
+            except ValueError:
+                print(f"\nUngültige Bruttoleistung in Datei {filename}: {bruttoleistung.text}")
+                continue
 
-                                elif user_input is None or user_input == 'n':
-                                    print(f"Die Bruttoleistung {leistung} kW wurde verworfen.")
+            if leistung <= 40000:
+                bruttoleistung_per_plz[plz.text] += leistung
+                continue
 
-                                else:
-                                    user_input = input_with_timeout(
-                                        "Den Wert angepasst eintragen? Ja -> Zahl angeben xxxx.x, Nein -> n: ", 10)
+            # Falls > 40000 kW → Nutzer fragen
+            user_input = input_with_timeout(
+                f"\nDie Bruttoleistung {leistung} kW, der Anlage {id.text} in {plz.text} aus {filename}, ist größer als 40.000 kW. Möchten Sie diese Leistung akzeptieren? (y/n): ",
+                10
+            )
 
-                                    if user_input is None or user_input == 'n':
-                                        print(f"Die Bruttoleistung {leistung} kW wurde verworfen.")
-                                    else:
-                                        try:
-                                            leistung = float(user_input)
-                                            print(f"Wurde als {leistung} kW übernommen.")
-                                            bruttoleistung_per_plz[plz.text] += leistung
-                                        except ValueError:
-                                            print("Ungültige Eingabe – Eintrag wird verworfen.")
+            if user_input == 'y':
+                bruttoleistung_per_plz[plz.text] += leistung
+                continue
 
-                            else:
-                                bruttoleistung_per_plz[plz.text] += leistung
+            if user_input is None or user_input == 'n':
+                print(f"Die Bruttoleistung {leistung} kW wurde verworfen.")
+                continue
 
-                        except ValueError:
-                            print(f"\nUngültige Bruttoleistung in Datei {filename}: {bruttoleistung.text}")
+            # Benutzer möchte anpassen
+            user_input = input_with_timeout("Den Wert angepasst eintragen? Ja -> Zahl angeben xxxx.x, Nein -> n: ", 10)
 
-            counter += 1
+            if user_input is None or user_input == 'n':
+                print(f"Die Bruttoleistung {leistung} kW wurde verworfen.")
+                continue
+
+            try:
+                leistung = float(user_input)
+                print(f"Wurde als {leistung} kW übernommen.")
+                bruttoleistung_per_plz[plz.text] += leistung
+            except ValueError:
+                print("Ungültige Eingabe – Eintrag wird verworfen.")
+                continue
+
+        counter += 1
 
     return bruttoleistung_per_plz
