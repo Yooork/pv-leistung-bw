@@ -1,20 +1,3 @@
-import subprocess
-import sys
-
-def install(package):
-    """Installiert ein Python-Paket."""
-    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
-
-# Installiere erforderliche Pakete
-required_packages = ["flask", "flask-cors"]
-
-for package in required_packages:
-    try:
-        __import__(package)
-    except ImportError:
-        print(f"Installiere fehlendes Paket: {package}")
-        install(package)
-
 from flask import Flask,jsonify
 from flask_cors import CORS
 from models import Schema
@@ -38,4 +21,4 @@ def getPLZ():
 
 if __name__ == "__main__":
     Schema()
-    app.run()
+    app.run(host='0.0.0.0', port=5000)
