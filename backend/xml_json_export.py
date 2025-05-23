@@ -12,7 +12,7 @@ def input_with_timeout(prompt, timeout):
         try:
             user_input[0] = input(prompt)
         except EOFError:
-            pass  # Für manche Umgebungen notwendig
+            pass
 
     thread = threading.Thread(target=get_input)
     thread.start()
@@ -60,28 +60,33 @@ def calculate_bruttoleistung_per_postleitzahl(directory):
                                     f"\nDie Bruttoleistung {leistung} kW, der Anlage {id.text} in {plz.text} aus {filename}, ist größer als 40.000 kW. Möchten Sie diese Leistung akzeptieren? (y/n): ",
                                     10
                                 )
-                                if user_input != 'y':
-                                    if user_input is None:
-                                        print(f"Die Bruttoleistung {leistung} kW wurde verworfen (Timeout).")
-                                        continue  # <<< Direkt weitermachen
-                                    while True:
-                                        user_input = input_with_timeout(
-                                            "Den Wert angepasst eintragen? Ja -> Zahl angeben xxxx.x, Nein -> n: ", 10)
-                                        if user_input is None or user_input == 'n':
-                                            print(f"Die Bruttoleistung {leistung} kW wurde verworfen.")
-                                            break
-                                        else:
-                                            try:
-                                                leistung = float(user_input)
-                                                print(f"Wurde als {leistung} kW übernommen.")
-                                                bruttoleistung_per_plz[plz.text] += leistung
-                                                break
-                                            except ValueError:
-                                                print("Ungültige Eingabe")
-                                else:
+
+                                if user_input == 'y':
                                     bruttoleistung_per_plz[plz.text] += leistung
+
+                                elif user_input is None or user_input == 'n':
+                                    print(f"Die Bruttoleistung {leistung} kW wurde verworfen.")
+
+                                else:
+                                    user_input = input_with_timeout(
+                                        "Den Wert angepasst eintragen? Ja -> Zahl angeben xxxx.x, Nein -> n: ", 10)
+
+                                    if user_input is None or user_input == 'n':
+                                        print(f"Die Bruttoleistung {leistung} kW wurde verworfen.")
+                                    else:
+                                        try:
+                                            leistung = float(user_input)
+                                            print(f"Wurde als {leistung} kW übernommen.")
+                                            bruttoleistung_per_plz[plz.text] += leistung
+                                        except ValueError:
+                                            print("Ungültige Eingabe – Eintrag wird verworfen.")
+
+                            else:
+                                bruttoleistung_per_plz[plz.text] += leistung
+
                         except ValueError:
                             print(f"\nUngültige Bruttoleistung in Datei {filename}: {bruttoleistung.text}")
+
             counter += 1
 
     return bruttoleistung_per_plz
