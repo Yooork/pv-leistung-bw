@@ -61,6 +61,9 @@ def calculate_bruttoleistung_per_postleitzahl(directory):
                                     10
                                 )
                                 if user_input != 'y':
+                                    if user_input is None:
+                                        print(f"Die Bruttoleistung {leistung} kW wurde verworfen (Timeout).")
+                                        continue  # <<< Direkt weitermachen
                                     while True:
                                         user_input = input_with_timeout(
                                             "Den Wert angepasst eintragen? Ja -> Zahl angeben xxxx.x, Nein -> n: ", 10)
@@ -77,8 +80,6 @@ def calculate_bruttoleistung_per_postleitzahl(directory):
                                                 print("Ungültige Eingabe")
                                 else:
                                     bruttoleistung_per_plz[plz.text] += leistung
-                            else:
-                                bruttoleistung_per_plz[plz.text] += leistung
                         except ValueError:
                             print(f"\nUngültige Bruttoleistung in Datei {filename}: {bruttoleistung.text}")
             counter += 1
